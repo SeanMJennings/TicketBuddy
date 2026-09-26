@@ -2,7 +2,7 @@
 A simple ticket booking platform for events.
 
 ## Pre-requisites
-Run the setup.ps1 or setup.sh script as Administrator to install all dependencies:
+Run the setup.ps1 script as Administrator or setup.sh as your regular user to install all dependencies:
 
 This installs: .NET 10 SDK, Docker, Node.js, .NET Aspire workload, and configures the GitHub NuGet feed.
 

@@ -3,22 +3,21 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root (sudo ./setup.sh)"
-    exit 1
-fi
-
 if [ ! -f /etc/os-release ] || ! grep -qE "^ID=(ubuntu|debian)$" /etc/os-release; then
     echo "This script only supports Ubuntu and Debian"
     exit 1
 fi
 
 . /etc/os-release
-SUDO_USER_HOME=$(eval echo ~$SUDO_USER)
+
+export DOTNET_EnableWriteXorExecute=0
+if ! grep -q "DOTNET_EnableWriteXorExecute" ~/.bashrc 2>/dev/null; then
+    echo 'export DOTNET_EnableWriteXorExecute=0' >> ~/.bashrc
+fi
 
 echo "Installing prerequisites..."
-apt-get update
-apt-get install -y curl ca-certificates
+sudo apt-get update
+sudo apt-get install -y curl ca-certificates libnss3-tools
 
 has_dotnet10=false
 if command -v dotnet >/dev/null 2>&1; then
@@ -30,47 +29,49 @@ fi
 if [ "$has_dotnet10" = false ]; then
     echo "Installing .NET 10 SDK..."
     curl -fsSL https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
-    dpkg -i packages-microsoft-prod.deb
+    sudo dpkg -i packages-microsoft-prod.deb
     rm packages-microsoft-prod.deb
-    apt-get update
-    apt-get install -y dotnet-sdk-10.0
+    sudo apt-get update
+    sudo apt-get install -y dotnet-sdk-10.0
 fi
 
 if ! command -v docker >/dev/null 2>&1; then
     echo "Installing Docker..."
-    apt-get update
-    apt-get install -y ca-certificates curl gnupg
-    install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/$ID/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    chmod a+r /etc/apt/keyrings/docker.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$ID $VERSION_CODENAME stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-    apt-get update
-    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    usermod -aG docker $SUDO_USER
+    sudo apt-get update
+    sudo apt-get install -y ca-certificates curl gnupg
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/$ID/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$ID $VERSION_CODENAME stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo usermod -aG docker "$USER"
 fi
 
 if ! command -v node >/dev/null 2>&1; then
     echo "Installing Node.js LTS..."
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-    apt-get install -y nodejs
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt-get install -y nodejs
 fi
 
 hash -r
 
 if ! command -v aspire >/dev/null 2>&1; then
     echo "Installing .NET Aspire workload..."
-    dotnet workload install aspire
+    sudo dotnet workload install aspire
 fi
 
 if ! command -v gh >/dev/null 2>&1; then
     echo "Installing Github ..."
-    apt-get install -y gh
+    sudo apt-get install -y gh
 fi
 
 echo "Configuring GitHub NuGet feed..."
 read -p "Enter GitHub username: " githubUsername
 
-gh auth login --scopes read:packages --git-protocol ssh --hostname github.com --skip-ssh-key --web
+if ! gh auth status --hostname github.com 2>/dev/null | grep -q "read:packages"; then
+    gh auth login --scopes read:packages --git-protocol ssh --hostname github.com --web
+fi
 token=$(gh auth token)
 
 if [ -n "$token" ]; then
@@ -83,21 +84,22 @@ if [ -n "$token" ]; then
 fi
 
 echo "Setting up HTTPS development certificates..."
+export SSL_CERT_DIR="$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs"
 echo 'export SSL_CERT_DIR="$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs"' >> ~/.bashrc
-source ~/.bashrc
-sudo dotnet dev-certs https --clean
+dotnet dev-certs https --clean
 dotnet dev-certs https --export-path ~/aspnetcore-dev-cert.crt --format PEM --no-password
 sudo cp ~/aspnetcore-dev-cert.crt /usr/local/share/ca-certificates/aspnetcore-dev-cert.crt
 sudo update-ca-certificates
-sudo dotnet dev-certs https --trust
+dotnet dev-certs https --trust
 
 echo "You may still need to navigate to localhost:5001 in browser when running and allow"
 
 echo "Installing UI dependencies..."
 cd "$SCRIPT_DIR/UI"
-sudo -u $SUDO_USER npm install
+npm install
 echo "Installing Playwright browsers..."
-sudo -u $SUDO_USER npx playwright install
+sudo npx playwright install-deps
+npx playwright install
 cd "$SCRIPT_DIR"
 
 echo "Restoring .NET packages..."
