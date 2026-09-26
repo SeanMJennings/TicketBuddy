@@ -27,7 +27,6 @@ public class EventRepository(BookingDbContext bookingDbContext) : IPersistEvents
     private void UpdateEvent(Domain.Bookings.Event.Event theEvent, Domain.Bookings.Event.Event @event)
     {
         @event.UpdateName(theEvent.EventName);
-        @event.UpdateDates(theEvent.StartDate, theEvent.EndDate);
         @event.UpdateVenue(theEvent.VenueId);
         @event.UpdatePrice(theEvent.Price);
         @event.TransferDomainEventsFrom(theEvent);

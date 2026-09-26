@@ -1,43 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.ValueObjects;
 
 namespace Domain.Bookings.Event;
 
 public class Event : Entity, IAmAnAggregateRoot
 {
-    internal Event(Guid id, EventName eventName, DateTimeOffset startDate, DateTimeOffset endDate, Guid venueId, Money price) : base(id)
+    private Event(Guid id, EventName eventName, Guid venueId, Money price) : base(id)
     {
-        if (endDate < startDate) throw new ValidationException("End date cannot be before start date");
         EventName = eventName;
-        StartDate = startDate;
-        EndDate = endDate;
         VenueId = venueId;
         Price = price;
     }
     
-    public static Event Create(Guid id, EventName eventName, DateTimeOffset startDate, DateTimeOffset endDate, Guid venueId, Money price)
+    public static Event Create(Guid id, EventName eventName, Guid venueId, Money price)
     {
-        var newEvent = new Event(id, eventName, startDate, endDate, venueId, price);
+        var newEvent = new Event(id, eventName, venueId, price);
         newEvent.RaiseEventUpsertedDomainEvent();
         return newEvent;
     }
     
     public EventName EventName { get; private set; }
-    public DateTimeOffset StartDate { get; private set; }
-    public DateTimeOffset EndDate { get; private set; }
     public Money Price { get; private set; }
     public Guid VenueId { get; private set; }
     
     public void UpdateName(EventName eventName) => EventName = eventName;
-    
-    public void UpdateDates(DateTimeOffset startDate, DateTimeOffset endDate)
-    {
-        if (startDate < DateTimeOffset.UtcNow || endDate < DateTimeOffset.UtcNow) throw new ValidationException("Event date cannot be in the past");
-        if (endDate < startDate) throw new ValidationException("End date cannot be before start date");
-        StartDate = startDate;
-        EndDate = endDate;
-    }
     
     public void UpdateVenue(Guid venueId) => VenueId = venueId;
     

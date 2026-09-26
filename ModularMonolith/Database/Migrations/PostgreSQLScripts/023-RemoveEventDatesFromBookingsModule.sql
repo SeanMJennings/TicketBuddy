@@ -1,0 +1,1 @@
+ALTER TABLE "Booking"."Events" DROP COLUMN StartDate; DROP COLUMN EndDate;

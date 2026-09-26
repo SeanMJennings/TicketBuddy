@@ -16,8 +16,7 @@ public class EventUpsertedHandler(
 
         if (ticketsHaveNotBeenReleased)
         {
-            await TicketsReleaser.ReleaseTicketsForEvent(message.EventId, message.Price, venue!.Capacity,
-                ticketsRepository);
+            await TicketsReleaser.ReleaseTicketsForEvent(message.EventId, message.Price, venue!.Capacity, ticketsRepository);
             return;
         }
 

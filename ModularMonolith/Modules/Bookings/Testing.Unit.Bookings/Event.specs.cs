@@ -33,15 +33,6 @@ public partial class EventSpecs
     }
     
     [Test]
-    public void cannot_create_event_with_end_date_before_start_date()
-    {
-        Given(valid_inputs);
-        And(an_event_with_end_date_before_start_date);
-        When(Validating(creating_an_event));
-        Then(Informs("End date cannot be before start date"));
-    }
-    
-    [Test]
     public void can_create_valid_event()
     {
         Given(valid_inputs);
@@ -55,33 +46,6 @@ public partial class EventSpecs
         Given(a_valid_event);
         When(updating_event_name);
         Then(event_name_is_updated);
-    }
-    
-    [Test]
-    public void can_update_event_dates()
-    {
-        Given(a_valid_event);
-        And(valid_dates);
-        When(updating_event_dates);
-        Then(event_dates_are_updated);
-    }
-    
-    [Test]
-    public void cannot_update_event_dates_to_past_dates()
-    {
-        Given(a_valid_event);
-        And(past_dates);
-        When(Validating(updating_event_dates));
-        Then(Informs("Event date cannot be in the past"));
-    }
-    
-    [Test]
-    public void cannot_update_event_with_end_date_before_start_date()
-    {
-        Given(a_valid_event);
-        And(an_event_with_end_date_before_start_date);
-        When(Validating(updating_event_dates));
-        Then(Informs("End date cannot be before start date"));
     }
     
     [Test]

@@ -10,8 +10,7 @@ public class UpsertEvent(
 {
     public async Task Execute(EventUpserted message)
     {
-        await eventRepository.Upsert(Domain.Bookings.Event.Event.Create(message.Id, message.EventName,
-            message.StartDate, message.EndDate, message.VenueId, message.Price));
+        await eventRepository.Upsert(Domain.Bookings.Event.Event.Create(message.Id, message.EventName, message.VenueId, message.Price));
         await unitOfWork.Commit();
     }
 }
