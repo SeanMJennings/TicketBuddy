@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using Application.Bookings.Ticket.Queries;
 using Controllers.EventsManagement;
 using Controllers.EventsManagement.Requests;
 using Controllers.Bookings.Requests;

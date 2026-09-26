@@ -1,6 +1,7 @@
 ﻿using Application.Bookings.Ticket.GetTicketsForEvent;
 using Domain.Bookings.Ticket;
 using Application;
+using Application.Bookings.Ticket.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

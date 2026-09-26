@@ -2,6 +2,7 @@
 using Domain.Bookings.Ticket;
 using Application;
 using Application.Authentication;
+using Application.Bookings.Ticket.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

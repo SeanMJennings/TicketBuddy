@@ -1,4 +1,6 @@
-﻿using Domain.Bookings.Ticket;
+﻿using Application.Bookings.Ticket;
+using Application.Bookings.Ticket.Queries;
+using Domain.Bookings.Ticket;
 using Infrastructure.Queries;
 
 namespace Infrastructure.Bookings.Ticket;

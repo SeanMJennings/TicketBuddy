@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domain.Bookings.Ticket;
+namespace Application.Bookings.Ticket.Queries;
 
 public class TicketQuery(Guid id, Guid eventId, decimal price, int seatNumber, bool purchased)
 {

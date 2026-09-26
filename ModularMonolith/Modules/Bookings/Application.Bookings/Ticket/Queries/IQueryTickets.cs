@@ -1,4 +1,6 @@
-﻿namespace Domain.Bookings.Ticket;
+﻿using Domain.Bookings.Ticket;
+
+namespace Application.Bookings.Ticket.Queries;
 
 public interface IQueryTickets
 {

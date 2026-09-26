@@ -1,4 +1,4 @@
-﻿namespace Application.Bookings.Ticket;
+﻿namespace Application.Bookings.Ticket.Queries;
 
 public interface IQueryTicketReservations
 {

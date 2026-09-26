@@ -1,4 +1,5 @@
 ﻿using Application.Bookings.Ticket;
+using Application.Bookings.Ticket.Queries;
 using Application.Bookings.Ticket.ReserveTickets;
 using StackExchange.Redis;
 

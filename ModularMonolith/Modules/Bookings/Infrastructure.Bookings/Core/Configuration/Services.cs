@@ -3,6 +3,7 @@ using Application.Bookings.Ticket;
 using Application.Bookings.Ticket.GetTicketsForEvent;
 using Application.Bookings.Ticket.GetTicketsForUser;
 using Application.Bookings.Ticket.PurchaseTickets;
+using Application.Bookings.Ticket.Queries;
 using Application.Bookings.Ticket.ReserveTickets;
 using Application.Bookings.User;
 using Application.Bookings.Venue;

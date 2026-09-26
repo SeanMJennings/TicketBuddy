@@ -1,3 +1,4 @@
+using Application.Bookings.Ticket.Queries;
 using Domain.Bookings.Event;
 using Domain.Bookings.Ticket;
 

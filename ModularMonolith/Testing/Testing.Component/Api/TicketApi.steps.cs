@@ -5,6 +5,7 @@ using Controllers.EventsManagement.Requests;
 using Controllers.Bookings.Requests;
 using Domain.Bookings.Ticket;
 using Application;
+using Application.Bookings.Ticket.Queries;
 using MassTransit.Testing;
 using Messages.EventsManagement;
 using Messaging.Keycloak.Users;
