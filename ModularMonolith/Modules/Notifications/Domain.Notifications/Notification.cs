@@ -1,8 +1,8 @@
-using Domain.Entities;
+using Domain.Aggregates;
 
 namespace Domain.Notifications;
 
-public class Notification : Entity, IAmAnAggregateRoot
+public class Notification : Aggregate
 {
     internal Notification(
         Guid id,

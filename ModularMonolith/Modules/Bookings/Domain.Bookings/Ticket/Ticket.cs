@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.Entities;
+using Domain.Aggregates;
 using Domain.ValueObjects;
 
 namespace Domain.Bookings.Ticket;
 
-public class Ticket(Guid id, Guid eventId, Money price, uint seatNumber) : Entity(id), IAmAnAggregateRoot
+public class Ticket(Guid id, Guid eventId, Money price, uint seatNumber) : Aggregate(id)
 {
     public Guid EventId { get; private set; } = eventId;
     public Money Price { get; private set; } = price;

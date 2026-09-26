@@ -17,16 +17,9 @@ public partial class DomainSpecs
     }
 
     [Test]
-    public void entities_that_are_not_aggregate_roots_cannot_be_public()
+    public void aggregate_cannot_have_reference_to_other_aggregates()
     {
-        Given(entity_types_that_are_not_aggregate_roots);
-        Then(should_not_be_public_if_not_aggregate_root);
-    }
-
-    [Test]
-    public void entity_cannot_have_reference_to_other_aggregate_root()
-    {
-        Given(entity_types_that_are_aggregate_roots);
-        Then(should_not_reference_other_aggregate_root);
+        Given(aggregates);
+        Then(should_not_reference_other_aggregates);
     }
 }

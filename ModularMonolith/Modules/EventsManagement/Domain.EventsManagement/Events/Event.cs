@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Domain.Entities;
+using Domain.Aggregates;
 using Domain.ValueObjects;
 
 namespace Domain.EventsManagement;
 
-public class Event : Entity, IAmAnAggregateRoot
+public class Event : Aggregate
 {
     public Event(Guid id, EventName eventName, DateTimeOffset startDate, DateTimeOffset endDate, Guid venueId, Money price) : base(id)
     {

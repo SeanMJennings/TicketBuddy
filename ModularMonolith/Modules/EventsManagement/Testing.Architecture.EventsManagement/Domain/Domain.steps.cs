@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using BDD;
+using Domain.Aggregates;
 using Domain.DomainEvents;
-using Domain.Entities;
 using Domain.EventsManagement;
 
 namespace Testing.Architecture.EventsManagement.Domain;
@@ -33,21 +33,10 @@ public partial class DomainSpecs : Specification
                         !t.IsDefined(typeof(CompilerGeneratedAttribute), false));
     }
 
-    
-    private void entity_types_that_are_not_aggregate_roots()
+    private void aggregates()
     {
         types = DomainAssembly.GetTypes()
-            .Where(t => typeof(Entity).IsAssignableFrom(t) &&
-                        t != typeof(Entity) &&
-                        !typeof(IAmAnAggregateRoot).IsAssignableFrom(t));
-    }
-
-    private void entity_types_that_are_aggregate_roots()
-    {
-        types = DomainAssembly.GetTypes()
-            .Where(t => typeof(Entity).IsAssignableFrom(t) &&
-                        t != typeof(Entity) &&
-                        typeof(IAmAnAggregateRoot).IsAssignableFrom(t));
+            .Where(t => typeof(Aggregate).IsAssignableFrom(t) && t != typeof(Aggregate));
     }
 
     private void should_be_immutable()
@@ -75,36 +64,19 @@ public partial class DomainSpecs : Specification
         var setMethod = property.GetSetMethod(true);
         return setMethod?.ReturnParameter
             .GetRequiredCustomModifiers()
-            .Contains(typeof(System.Runtime.CompilerServices.IsExternalInit)) == true;
+            .Contains(typeof(IsExternalInit)) == true;
     }
 
-    private void should_not_be_public_if_not_aggregate_root()
+    private void should_not_reference_other_aggregates()
     {
-        List<Type> failingTypes = [];
-        foreach (var type in types)
-        {
-            if (type.IsNotPublic) continue;
-            failingTypes.Add(type);
-        }
-
-        Assert.That(failingTypes, Is.Null.Or.Empty);
-    }
-
-
-    private void should_not_reference_other_aggregate_root()
-    {
-        var aggregateRootTypes = DomainAssembly.GetTypes()
-            .Where(t => typeof(IAmAnAggregateRoot).IsAssignableFrom(t) && t != typeof(IAmAnAggregateRoot))
-            .ToList();
-
         List<Type> failingTypes = [];
         foreach (var entityType in types)
         {
             var fields = entityType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
             var properties = entityType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
-            if (fields.Any(f => aggregateRootTypes.Contains(f.FieldType)) ||
-                properties.Any(p => aggregateRootTypes.Contains(p.PropertyType)))
+            if (fields.Any(f => types.Contains(f.FieldType)) ||
+                properties.Any(p => types.Contains(p.PropertyType)))
             {
                 failingTypes.Add(entityType);
             }

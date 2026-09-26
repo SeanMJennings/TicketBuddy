@@ -1,8 +1,8 @@
-﻿using Domain.Entities;
+﻿using Domain.Aggregates;
 
 namespace Domain.Bookings.User
 {
-    public class User(Guid id, Name fullName, Email email) : Entity(id), IAmAnAggregateRoot
+    public class User(Guid id, Name fullName, Email email) : Aggregate(id)
     {
         public Name FullName { get; private set; } = fullName;
         public Email Email { get; private set; } = email;

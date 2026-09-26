@@ -21,8 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Entity.steps.cs">
-        <DependentUpon>Entity.specs.cs</DependentUpon>
+      <Compile Update="Aggregate.steps.cs">
+        <DependentUpon>Aggregate.specs.cs</DependentUpon>
       </Compile>
       <Compile Update="EventName.steps.cs">
         <DependentUpon>EventName.specs.cs</DependentUpon>

@@ -18,7 +18,7 @@ public partial class EventNameSpecs : Specification
     {
         Given(an_event_name_with_special_characters);
         When(Validating(creating_an_event_name));
-        Then(Informs("Name can only have alphanumerical characters"));
+        Then(Informs("EventName can only have alphanumerical characters"));
     }
 
     [Test]

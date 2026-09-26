@@ -1,16 +1,16 @@
 ﻿using Domain.DomainEvents;
 
-namespace Domain.Entities;
+namespace Domain.Aggregates;
 
-public abstract class Entity
+public abstract class Aggregate
 {
-    protected Entity(Guid id)
+    protected Aggregate(Guid id)
     {
         Validation.BasedOn(errors =>
         {
             if (id == Guid.Empty)
             {
-                errors.Add("Entity ID cannot be an empty GUID.");
+                errors.Add("Aggregate ID cannot be an empty GUID.");
             }
         });
         Id = id;
@@ -28,7 +28,7 @@ public abstract class Entity
         _domainEvents.Clear();
     }
 
-    public void TransferDomainEventsFrom(Entity source)
+    public void TransferDomainEventsFrom(Aggregate source)
     {
         foreach (var domainEvent in source.DomainEvents)
         {

@@ -1,9 +1,9 @@
-﻿using Domain.Entities;
+﻿using Domain.Aggregates;
 using Domain.ValueObjects;
 
 namespace Domain.Bookings.Event;
 
-public class Event : Entity, IAmAnAggregateRoot
+public class Event : Aggregate
 {
     private Event(Guid id, EventName eventName, Guid venueId, Money price) : base(id)
     {

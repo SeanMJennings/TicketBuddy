@@ -1,8 +1,8 @@
-using Domain.Entities;
+using Domain.Aggregates;
 
 namespace Domain.EventsManagement.Venue;
 
-public class Venue : Entity, IAmAnAggregateRoot
+public class Venue : Aggregate
 {
     private const uint MinCapacity = 1;
     private const uint MaxCapacity = 50;
