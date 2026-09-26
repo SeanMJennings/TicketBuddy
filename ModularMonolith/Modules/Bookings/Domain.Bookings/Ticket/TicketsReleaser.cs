@@ -1,11 +1,10 @@
-﻿using Domain.Bookings.Core;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 
 namespace Domain.Bookings.Ticket;
 
 public static class TicketsReleaser
 {
-    public static async Task ReleaseTicketsForEvent(Guid eventId, Money price, uint venueCapacity, IPersistTickets ticketRepository, IBookingUnitOfWork unitOfWork)
+    public static async Task ReleaseTicketsForEvent(Guid eventId, Money price, uint venueCapacity, IPersistTickets ticketRepository)
     {
         var tickets = new List<Ticket>();
         for (uint i = 0; i < venueCapacity; i++)
@@ -19,6 +18,5 @@ public static class TicketsReleaser
         }
 
         await ticketRepository.AddRange(tickets);
-        await unitOfWork.Commit();
     }
 }

@@ -7,22 +7,33 @@ namespace Application.Bookings.Ticket.PurchaseTickets;
 
 public class TicketWasPurchasedHandler(
     IPublishMessages publish,
-    IPersistEvents eventRepository) : HandleDomainEvents<TicketWasPurchased>
+    IPersistEvents eventRepository,
+    IPersistTickets ticketRepository) : HandleDomainEvents<TicketWasPurchased>
 {
     protected override async Task Handle(TicketWasPurchased message)
     {
         var theEvent = await eventRepository.GetById(message.EventId)!;
-
-        if (theEvent is null) return;
         
-        var integrationEvent = new TicketPurchased
+        var availableCount = await ticketRepository.GetAvailableCountByEventId(message.EventId);
+        
+        var ticketPurchasedIntegrationEvent = new TicketPurchased
         {
             TicketId = message.TicketId,
             UserId = message.UserId,
             EventId = message.EventId,
-            EventName = theEvent.EventName
+            EventName = theEvent!.EventName
         };
 
-        await publish.Publish(integrationEvent);
+        await publish.Publish(ticketPurchasedIntegrationEvent);
+        
+        if (availableCount == 0)
+        {
+            var soldOutIntegrationEvent = new EventSoldOut
+            {
+                EventId = message.EventId
+            };
+        
+            await publish.Publish(soldOutIntegrationEvent);
+        }
     }
 }

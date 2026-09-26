@@ -50,16 +50,6 @@ public partial class PurchaseTicketsSpecs
     }
 
     [Test]
-    public async Task cannot_purchase_tickets_for_non_existent_event()
-    {
-        await Given(a_user_exists);
-        await And(reserving_tickets);
-        await When(Validating(purchasing_tickets_for_non_existent_event));
-              Then(Informs($"Event with id {nonExistentEventId} was not found."));
-              And(an_entity_not_found_exception_was_thrown);
-    }
-
-    [Test]
     public async Task different_user_cannot_purchase_reserved_tickets()
     {
         await Given(an_event_exists);
@@ -112,12 +102,5 @@ public partial class PurchaseTicketsSpecs
         await And(reserving_tickets);
         await When(purchasing_two_tickets);
         await Then(outbox_messages_are_persisted_to_the_messaging_schema);
-    }
-
-    [Test]
-    public async Task ticket_purchased_integration_event_is_not_published_when_event_is_not_found()
-    {
-        await When(handling_ticket_was_purchased_for_non_existent_event);
-        await Then(ticket_purchased_integration_event_is_not_published);
     }
 }

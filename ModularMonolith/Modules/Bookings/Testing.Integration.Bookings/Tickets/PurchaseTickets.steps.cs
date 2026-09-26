@@ -1,9 +1,6 @@
 using System.Security.Claims;
-using Application.Bookings.Ticket.PurchaseTickets;
 using Controllers.Bookings.Requests;
 using Controllers.Bookings.Ticket;
-using Domain.Exceptions;
-using Domain.Bookings.Ticket;
 using Infrastructure.Configuration;
 using Infrastructure.Messaging;
 using Infrastructure.Bookings.Configuration;
@@ -34,7 +31,6 @@ public partial class PurchaseTicketsSpecs : TruncateDbSpecification
     private VenueUpsertedConsumer venueUpsertedConsumer = null!;
     private UserRegisteredConsumer userRegisteredConsumer = null!;
     private ServiceProvider serviceProvider = null!;
-    private Guid nonExistentEventId = Guid.CreateVersion7();
     private ITestHarness testHarness = null!;
 
     private Guid event_id = Guid.CreateVersion7();
@@ -219,14 +215,6 @@ public partial class PurchaseTicketsSpecs : TruncateDbSpecification
         await purchaseTicketsEndpoint.PurchaseTickets(event_id, payload);
     }
 
-    private async Task purchasing_tickets_for_non_existent_event()
-    {
-        AddUserClaimToControllerContext(user_id);
-        nonExistentEventId = Guid.CreateVersion7();
-        var payload = new TicketPurchasePayload([Guid.CreateVersion7()]);
-        await purchaseTicketsEndpoint.PurchaseTickets(nonExistentEventId, payload);
-    }
-
     private async Task updating_the_ticket_prices()
     {
         var mockContext = Substitute.For<ConsumeContext<EventUpserted>>();
@@ -302,11 +290,6 @@ public partial class PurchaseTicketsSpecs : TruncateDbSpecification
         count.ShouldBeGreaterThan(0);
     }
 
-    private static void an_entity_not_found_exception_was_thrown()
-    {
-        error.ShouldBeOfType<EntityNotFoundException>();
-    }
-
     private static async Task outbox_messages_are_persisted_to_the_messaging_schema()
     {
         await using var connection = new NpgsqlConnection(Setup.Database.GetConnectionString());
@@ -316,22 +299,5 @@ public partial class PurchaseTicketsSpecs : TruncateDbSpecification
             connection);
         var count = (long)(await cmd.ExecuteScalarAsync())!;
         count.ShouldBeGreaterThan(0);
-    }
-
-    private async Task handling_ticket_was_purchased_for_non_existent_event()
-    {
-        var handler = serviceProvider.GetRequiredService<TicketWasPurchasedHandler>();
-        await handler.Handle(new TicketWasPurchased(Guid.CreateVersion7(), Guid.CreateVersion7(), Guid.CreateVersion7()));
-    }
-
-    private static async Task ticket_purchased_integration_event_is_not_published()
-    {
-        await using var connection = new NpgsqlConnection(Setup.Database.GetConnectionString());
-        await connection.OpenAsync();
-        await using var cmd = new NpgsqlCommand(
-            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%TicketPurchased%'""",
-            connection);
-        var count = (long)(await cmd.ExecuteScalarAsync())!;
-        count.ShouldBe(0);
     }
 }

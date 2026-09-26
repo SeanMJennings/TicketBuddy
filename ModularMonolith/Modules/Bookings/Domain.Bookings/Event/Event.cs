@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.Entities;
-using Domain.Bookings.Ticket;
 using Domain.ValueObjects;
 
 namespace Domain.Bookings.Event;
@@ -43,8 +42,6 @@ public class Event : Entity, IAmAnAggregateRoot
     public void UpdateVenue(Guid venueId) => VenueId = venueId;
     
     public void UpdatePrice(Money price) => Price = price;
-    
-    public void MarkAsSoldOut() => AddDomainEvent(new AllTicketsSold(Id));
 
     private void RaiseEventUpsertedDomainEvent() => AddDomainEvent(new EventUpserted(Id, Price, VenueId));
 }

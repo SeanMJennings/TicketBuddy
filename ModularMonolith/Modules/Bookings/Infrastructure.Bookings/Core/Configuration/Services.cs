@@ -24,7 +24,6 @@ public static class Services
     {
         var eventHandlerMap = new DomainEventsMapBuilder()
             .Map<EventUpserted, EventUpsertedHandler>()
-            .Map<AllTicketsSold, AllTicketsSoldHandler>()
             .Map<TicketWasPurchased, TicketWasPurchasedHandler>()
             .Build();
 
@@ -43,7 +42,6 @@ public static class Services
             .AddScoped<ReserveTickets>()
             .AddScoped<GetTicketsForEvent>()
             .AddScoped<GetTicketsForUser>()
-            .AddScoped<AllTicketsSoldHandler>()
             .AddScoped<TicketWasPurchasedHandler>()
             .AddScoped<IPersistUsers, User.UserRepository>()
             .AddScoped<UpsertUser>()
