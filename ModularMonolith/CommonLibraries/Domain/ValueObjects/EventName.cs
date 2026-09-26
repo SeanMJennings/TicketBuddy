@@ -26,9 +26,9 @@ public readonly struct EventName : IEquatable<EventName>
     }
     
     public override string ToString() => _value;
-    public override bool Equals(object? obj) => obj is EventName other && _value.Equals(other._value);
-    public bool Equals(EventName other) => _value.Equals(other._value);
-    public override int GetHashCode() => _value.GetHashCode();
+    public override bool Equals(object? obj) => obj is EventName other && string.Equals(_value, other._value, StringComparison.OrdinalIgnoreCase);
+    public bool Equals(EventName other) => string.Equals(_value, other._value, StringComparison.OrdinalIgnoreCase);
+    public override int GetHashCode() => _value?.ToUpperInvariant().GetHashCode() ?? 0;
     public static bool operator ==(EventName left, EventName right) => left._value == right._value;
     public static bool operator !=(EventName left, EventName right) => left._value != right._value;
     public static implicit operator string(EventName eventName) => eventName._value;
