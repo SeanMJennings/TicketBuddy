@@ -5,8 +5,10 @@ namespace Domain.Bookings.Ticket;
 
 public static class TicketsValidator
 {
-    public static Event.Event CheckEventExists(Event.Event? theEvent, Guid eventId) =>
-        theEvent ?? throw new EntityNotFoundException(nameof(Event), eventId);
+    public static void CheckEventExists(Event.Event? theEvent, Guid eventId)
+    {
+        if (theEvent is null) throw new EntityNotFoundException(nameof(Event), eventId);
+    }
 
     public static IReadOnlyList<Ticket> CheckTicketsExist(Guid[] ticketIds, IReadOnlyList<Ticket> tickets) =>
         tickets.Count != ticketIds.Length ? throw new ValidationException("One or more tickets do not exist") : tickets;
