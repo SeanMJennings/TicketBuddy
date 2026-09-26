@@ -1,7 +1,7 @@
-﻿using Infrastructure.Events.Core.Configuration;
+﻿using Infrastructure.EventsManagement.Core.Configuration;
 using Infrastructure.Messaging;
 using Infrastructure.Notifications.Core.Configuration;
-using Infrastructure.Tickets.Configuration;
+using Infrastructure.Bookings.Configuration;
 using MassTransit;
 
 namespace Api.Hosting;
@@ -13,15 +13,15 @@ internal static class Messaging
         services.AddMassTransit(x =>
         {
             x.SetKebabCaseEndpointNameFormatter();
-            x.AddEventsConsumers();
-            x.AddTicketsConsumers();
+            x.AddEventsManagementConsumers();
+            x.AddBookingsConsumers();
             x.AddNotificationsConsumers();
             x.AddSharedOutbox();
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(rabbitMqConnectionString);
-                cfg.ConfigureEventsMessaging();
-                cfg.ConfigureTicketsMessaging();
+                cfg.ConfigureEventsManagementMessaging();
+                cfg.ConfigureBookingsMessaging();
                 cfg.ConfigureEndpoints(context);
             });
         });

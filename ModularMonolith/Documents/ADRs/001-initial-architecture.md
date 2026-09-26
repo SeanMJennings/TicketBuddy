@@ -30,7 +30,7 @@ TicketBuddy is an event ticketing platform built as a modular monolith. This arc
 
 The system consists of:
 - **Single ASP.NET Core Host** - Single deployment unit hosting all modules
-- **3 Business Modules** - Events, Tickets, Keycloak.Users
+- **3 Business Modules** - EventsManagement, Bookings, Keycloak.Users
 - **Shared Infrastructure** - PostgreSQL, Redis, RabbitMQ, Keycloak
 - **Common Libraries** - Reusable domain patterns and infrastructure
 
@@ -39,7 +39,7 @@ The system consists of:
 │                    TicketBuddy REST API                      │
 │                   (Single ASP.NET Host)                      │
 ├─────────────────────────────────────────────────────────────┤
-│  Events Module  │  Tickets Module  │  Keycloak.Users Module │
+│  EventsManagement Module │ Bookings Module  │  Keycloak.Users Module │
 ├─────────────────────────────────────────────────────────────┤
 │              Common Libraries (Domain, App, Infra)           │
 ├─────────────────────────────────────────────────────────────┤
@@ -55,12 +55,12 @@ The system consists of:
 
 ### Current Modules
 
-**1. Events Module** - Manages event creation and lifecycle
+**1. EventsManagement Module** - Manages event creation and lifecycle
 - Entities: Event
 - Responsibilities: Event creation, updates, venue management, pricing
 - Integration: Publishes `EventUpserted` messages, consumes `EventSoldOut` messages
 
-**2. Tickets Module** - Handles ticket sales and inventory
+**2. Bookings Module** - Handles ticket sales and inventory
 - Responsibilities: Ticket reservation, purchase, inventory tracking
 - Integration: Publishes `EventSoldOut` messages when tickets depleted
 
@@ -75,18 +75,18 @@ Each module follows a consistent directory structure:
 
 ```
 Modules/
-├── Events/
-│   ├── Domain.Events/                    # Pure business logic
-│   ├── Application.Events/               # Commands, queries, use cases
-│   ├── Infrastructure.Events/            # Persistence, external services
-│   ├── Controllers.Events/               # HTTP endpoints (primary adapters)
-│   ├── Integration.Events.Messaging/     # Integration contracts
+├── EventsManagement/
+│   ├── Domain.EventsManagement/                    # Pure business logic
+│   ├── Application.EventsManagement/               # Commands, queries, use cases
+│   ├── Infrastructure.EventsManagement/            # Persistence, external services
+│   ├── Controllers.EventsManagement/               # HTTP endpoints (primary adapters)
+│   ├── Integration.EventsManagement.Messaging/     # Integration contracts
 │   └── Testing/
-│       ├── Testing.Unit.Events/          # Domain & application tests
-│       ├── Testing.Integration.Events/   # Infrastructure tests
-│       └── Testing.Architecture.Events/  # Boundary enforcement tests
-├── Tickets/
-│   └── [Same structure as Events]
+│       ├── Testing.Unit.EventsManagement/          # Domain & application tests
+│       ├── Testing.Integration.EventsManagement/   # Infrastructure tests
+│       └── Testing.Architecture.EventsManagement/  # Boundary enforcement tests
+├── Bookings/
+│   └── [Same structure as EventsManagement]
 └── Keycloak.Users/
     └── [Same structure - intentionally thin module]
 ```
@@ -112,7 +112,7 @@ Each module follows hexagonal architecture with clear separation:
 
 **Example:**
 ```csharp
-// Modules/Events/Domain.Events/Entities/Event.cs
+// Modules/EventsManagement/Domain.EventsManagement/Entities/Event.cs
 public class Event : Entity, IAmAnAggregateRoot
 {
     public EventName EventName { get; private set; }
@@ -126,7 +126,7 @@ public class Event : Entity, IAmAnAggregateRoot
 
 **Dependencies:** References `CommonLibraries/Domain` only
 
-**See:** `Modules/Events/Domain.Events/Domain.Events.csproj:10`
+**See:** `Modules/EventsManagement/Domain.EventsManagement/Domain.EventsManagement.csproj:10`
 
 ---
 
@@ -142,7 +142,7 @@ public class Event : Entity, IAmAnAggregateRoot
 
 **Example:**
 ```csharp
-// Modules/Events/Application.Events/Commands/EventCommands.cs
+// Modules/EventsManagement/Application.EventsManagement/Commands/EventCommands.cs
 public class EventCommands
 {
     // Command: Create new event (write side)
@@ -156,7 +156,7 @@ public class EventCommands
     }
 }
 
-// Modules/Events/Application.Events/Queries/EventQueries.cs
+// Modules/EventsManagement/Application.EventsManagement/Queries/EventQueries.cs
 public class EventQueries
 {
     // Query: Retrieve events (read side)
@@ -173,7 +173,7 @@ public class EventQueries
 
 **Cross-Module Integration:** Can reference other modules' `Integration.*.Messaging` contracts
 
-**See:** `Modules/Events/Application.Events/Application.Events.csproj:10-11`
+**See:** `Modules/EventsManagement/Application.EventsManagement/Application.EventsManagement.csproj:10-11`
 
 ---
 
@@ -189,7 +189,7 @@ public class EventQueries
 
 **Dependencies:** References Application + Domain + `CommonLibraries/Infrastructure`
 
-**See:** `Modules/Events/Infrastructure.Events/Infrastructure.Events.csproj:10-14`
+**See:** `Modules/EventsManagement/Infrastructure.EventsManagement/Infrastructure.EventsManagement.csproj:10-14`
 
 ---
 
@@ -204,7 +204,7 @@ public class EventQueries
 
 **Example:**
 ```csharp
-// Modules/Events/Controllers.Events/EventController.cs
+// Modules/EventsManagement/Controllers.EventsManagement/EventController.cs
 [ApiController]
 public class EventController(EventCommands commands, EventQueries queries)
 {
@@ -224,7 +224,7 @@ public class EventController(EventCommands commands, EventQueries queries)
 
 **Pattern:** Thin adapters delegate to Application layer (Commands/Queries)
 
-**See:** `Modules/Events/Controllers.Events/EventController.cs:12`
+**See:** `Modules/EventsManagement/Controllers.EventsManagement/EventController.cs:12`
 
 ---
 
@@ -238,7 +238,7 @@ public class EventController(EventCommands commands, EventQueries queries)
 
 **Example:**
 ```csharp
-// Modules/Events/Integration.Events.Messaging/EventUpserted.cs
+// Modules/EventsManagement/Integration.EventsManagement.Messaging/EventUpserted.cs
 public record EventUpserted
 {
     public Guid Id { get; init; }
@@ -255,14 +255,14 @@ public record EventUpserted
 
 **Example Consumer:**
 ```csharp
-// Modules/Tickets/Application.Tickets/IntegrationMessageConsumers/EventUpsertedConsumer.cs
+// Modules/Bookings/Application.Bookings/IntegrationMessageConsumers/EventUpsertedConsumer.cs
 public class EventUpsertedConsumer : IConsumer<EventUpserted>
 {
     // React to events being created/updated
 }
 ```
 
-**See:** `Modules/Events/Integration.Events.Messaging/EventUpserted.cs:5`
+**See:** `Modules/EventsManagement/Integration.EventsManagement.Messaging/EventUpserted.cs:5`
 
 ---
 
@@ -422,23 +422,23 @@ public abstract class Entity(Guid Id)
 **Example:**
 
 ```csharp
-// Events module: Publish when event created
-// Infrastructure.Events publishes EventUpserted to RabbitMQ
+// EventsManagement module: Publish when event created
+// Infrastructure.EventsManagement publishes EventUpserted to RabbitMQ
 
-// Tickets module: React to event changes
+// Bookings module: React to event changes
 public class EventUpsertedConsumer : IConsumer<EventUpserted>
 {
     public async Task Consume(ConsumeContext<EventUpserted> context)
     {
         // Update local read model with event details
-        // Tickets module now has event information for validation
+        // Bookings module now has event information for validation
     }
 }
 ```
 
 **Integration Messages:**
-- `EventUpserted` (Events → Tickets)
-- `EventSoldOut` (Tickets → Events)
+- `EventUpserted` (EventsManagement → Bookings)
+- `EventSoldOut` (Bookings → EventsManagement)
 - `UserRegistered` (Keycloak.Users → other modules)
 
 **Benefits:**
@@ -458,15 +458,15 @@ public class EventUpsertedConsumer : IConsumer<EventUpserted>
 2. Modules CAN reference other modules' `Integration.*.Messaging` contracts
 3. All modules CAN reference Common Libraries
 
-**Example (Events module):**
+**Example (EventsManagement module):**
 ```xml
-<!-- Application.Events.csproj -->
+<!-- Application.EventsManagement.csproj -->
 <ItemGroup>
   <!-- ✅ ALLOWED: Reference another module's integration contract -->
-  <ProjectReference Include="..\..\Tickets\Integration.Tickets.Messaging\" />
+  <ProjectReference Include="..\../Bookings/Integration.Bookings.Messaging\" />
 
   <!-- ❌ FORBIDDEN: Direct reference to another module's internals -->
-  <!-- <ProjectReference Include="..\..\Tickets\Application.Tickets\" /> -->
+  <!-- <ProjectReference Include="..\../Bookings/Application.Bookings\" /> -->
 </ItemGroup>
 ```
 
@@ -590,7 +590,7 @@ public partial class EventSpecs
 ```csharp
 // Event.steps.cs
 using BDD;
-using Domain.Events.Entities;
+using Domain.EventsManagement.Entities;
 using Domain.Primitives;
 using Shouldly;
 
@@ -661,7 +661,7 @@ public partial class EventSpecs : Specification
 
 **Location:** `Modules/{Module}/Testing.Unit.{Module}/`
 
-**See:** `Modules/Events/Testing.Unit.Events/Event.specs.cs`
+**See:** `Modules/EventsManagement/Testing.Unit.EventsManagement/Event.specs.cs`
 
 ---
 
@@ -735,7 +735,7 @@ public partial class EventControllerSpecs
 
 **Location:** `Modules/{Module}/Testing.Integration.{Module}/`
 
-**See:** `Modules/Events/Testing.Integration.Events/EventController.specs.cs`
+**See:** `Modules/EventsManagement/Testing.Integration.EventsManagement/EventController.specs.cs`
 
 ---
 
@@ -758,7 +758,7 @@ public partial class EventControllerSpecs
 
 ```csharp
 // Module.specs.cs
-namespace Testing.Architecture.Events.Modules;
+namespace Testing.Architecture.EventsManagement.Modules;
 
 internal partial class ModuleSpecs
 {
@@ -787,7 +787,7 @@ internal partial class ModuleSpecs
 
 ```csharp
 // Domain.specs.cs
-namespace Testing.Architecture.Events.Domain;
+namespace Testing.Architecture.EventsManagement.Domain;
 
 public partial class DomainSpecs
 {
@@ -824,7 +824,7 @@ public partial class DomainSpecs
 
 **Location:** `Modules/{Module}/Testing.Architecture.{Module}/`
 
-**See:** `Modules/Events/Testing.Architecture.Events/`
+**See:** `Modules/EventsManagement/Testing.Architecture.EventsManagement/`
 
 ---
 
@@ -1008,7 +1008,7 @@ public partial class TicketBuddySpecs
 
 **Key Characteristics:**
 - Tests business capabilities, not technical implementation
-- Spans multiple modules (Events → Tickets → Users)
+- Spans multiple modules (EventsManagement → Bookings → Users)
 - Verifies complete workflows
 - Uses domain language in test names
 
@@ -1085,7 +1085,7 @@ dotnet test --filter "FullyQualifiedName~Testing.Acceptance"
 
 **Run specific module tests:**
 ```bash
-dotnet test Modules/Events/Testing.Unit.Events
+dotnet test Modules/EventsManagement/Testing.Unit.EventsManagement
 ```
 
 ---
@@ -1274,7 +1274,7 @@ dotnet run
 
 ## Glossary
 
-**Module** - Self-contained business capability with clear boundaries (Events, Tickets, Keycloak.Users)
+**Module** - Self-contained business capability with clear boundaries (EventsManagement, Bookings, Keycloak.Users)
 
 **Aggregate Root** - Entity that enforces consistency boundaries (implements `IAmAnAggregateRoot`)
 

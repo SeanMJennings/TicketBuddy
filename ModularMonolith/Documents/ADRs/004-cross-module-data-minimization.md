@@ -9,19 +9,19 @@
 In a modular monolith architecture, modules need to share information about aggregates owned by other modules. This creates a fundamental tension:
 
 **The Problem:**
-- Modules are autonomous and own their aggregates (e.g., Events module owns Venue aggregate)
-- Other modules need some information about these aggregates (e.g., Tickets module needs venue details to display)
+- Modules are autonomous and own their aggregates (e.g., EventsManagement module owns Venue aggregate)
+- Other modules need some information about these aggregates (e.g., Bookings module needs venue details to display)
 - Sharing too much data couples modules to implementation details
 - Sharing too little data may require synchronous queries or additional messages
 
 **Specific Case - Venue Synchronization:**
-The Events module owns the Venue aggregate with these properties:
+The EventsManagement module owns the Venue aggregate with these properties:
 - `Id` (Guid)
 - `Name` (VenueName value object)
 - `Address` (Address value object: Street, City, Postcode)
 - `Capacity` (uint: 1-50 seats)
 
-The Tickets module needs venue information to:
+The Bookings module needs venue information to:
 - Display venue name when showing available tickets
 - Validate ticket quantity doesn't exceed venue capacity
 - Show capacity information to users
@@ -31,14 +31,14 @@ The Tickets module needs venue information to:
 **Options:**
 1. Full aggregate (Id, Name, Address, Capacity)
 2. Minimal data (Id, Name, Capacity)
-3. Just ID (Tickets module queries Events module for details)
+3. Just ID (Bookings module queries EventsManagement module for details)
 4. Shared database read access
 
 **Requirements:**
 - Maintain module autonomy
 - Support asynchronous communication pattern
-- Enable Tickets module to fulfill its responsibilities
-- Avoid coupling to Events module's internal structure
+- Enable Bookings module to fulfill its responsibilities
+- Avoid coupling to EventsManagement module's internal structure
 - Support future evolution of both modules
 
 ## Decision
@@ -47,7 +47,7 @@ We will send **only minimal required data** in cross-module integration messages
 
 **Pattern:**
 ```csharp
-// Events module: Integration message
+// EventsManagement module: Integration message
 public record VenueUpserted
 {
     public Guid Id { get; init; }           // ✅ Required (identity)
@@ -57,9 +57,9 @@ public record VenueUpserted
 }
 ```
 
-**Consuming Module (Tickets) Read Model:**
+**Consuming Module (Bookings) Read Model:**
 ```csharp
-// Tickets module: Read model entity
+// Bookings module: Read model entity
 public class Venue : Entity
 {
     public string Name { get; set; }
@@ -103,13 +103,13 @@ public record VenueUpserted
 
 **Cons:**
 - Creates coupling to internal structure (Address value object)
-- Tickets module doesn't need Address
-- If Address structure changes, Tickets module is affected
+- Bookings module doesn't need Address
+- If Address structure changes, Bookings module is affected
 - Larger messages on message bus
 - Encourages consumers to depend on unnecessary data
 
 **Why Rejected:**
-Violates the principle of minimal coupling. The Tickets module has no use case requiring venue address information. Including it creates unnecessary dependency on the Events module's internal Address value object structure. If we later expand Address to support international venues, we'd have to update Tickets module even though it never used the data.
+Violates the principle of minimal coupling. The Bookings module has no use case requiring venue address information. Including it creates unnecessary dependency on the EventsManagement module's internal Address value object structure. If we later expand Address to support international venues, we'd have to update Bookings module even though it never used the data.
 
 ---
 
@@ -122,7 +122,7 @@ public record VenueUpserted
     public Guid Id { get; init; }  // Only the ID
 }
 
-// Tickets module queries Events module for details when needed
+// Bookings module queries EventsManagement module for details when needed
 public class GetTicketsForEvent
 {
     public async Task Execute(Guid eventId)
@@ -141,12 +141,12 @@ public class GetTicketsForEvent
 **Cons:**
 - **Violates async-first pattern** - introduces synchronous cross-module dependency
 - **Performance impact** - every read requires cross-module query
-- **Availability coupling** - Tickets module can't function if Events module is down
-- **Breaks module autonomy** - Tickets module depends on Events module being available
-- Requires exposing query endpoints on Events module
+- **Availability coupling** - Bookings module can't function if EventsManagement module is down
+- **Breaks module autonomy** - Bookings module depends on EventsManagement module being available
+- Requires exposing query endpoints on EventsManagement module
 
 **Why Rejected:**
-This defeats the purpose of event-driven architecture. One of the key benefits of the modular monolith with async messaging is module resilience - the Tickets module should be able to serve requests even if the Events module is temporarily unavailable (e.g., during deployment). Synchronous queries couple module availability and create a distributed monolith anti-pattern.
+This defeats the purpose of event-driven architecture. One of the key benefits of the modular monolith with async messaging is module resilience - the Bookings module should be able to serve requests even if the EventsManagement module is temporarily unavailable (e.g., during deployment). Synchronous queries couple module availability and create a distributed monolith anti-pattern.
 
 ---
 
@@ -154,8 +154,8 @@ This defeats the purpose of event-driven architecture. One of the key benefits o
 
 **Approach:**
 ```sql
--- Tickets module directly reads Events module's Venues table
-SELECT Name, Capacity FROM events.venues WHERE id = @venueId;
+-- Bookings module directly reads EventsManagement module's Venues table
+SELECT Name, Capacity FROM eventmanagement.venues WHERE id = @venueId;
 ```
 
 **Pros:**
@@ -165,14 +165,14 @@ SELECT Name, Capacity FROM events.venues WHERE id = @venueId;
 
 **Cons:**
 - **Violates module boundaries** - couples to database schema
-- **Breaks encapsulation** - Tickets module bypasses Events module's logic
-- **Schema coupling** - can't refactor Events database without breaking Tickets
+- **Breaks encapsulation** - Bookings module bypasses EventsManagement module's logic
+- **Schema coupling** - can't refactor EventsManagement database without breaking Bookings
 - **No abstraction** - direct dependency on implementation details
 - **Prevents future extraction** - can't move to microservices without major refactor
 - **No audit trail** - can't see when/why data was accessed
 
 **Why Rejected:**
-This is the anti-pattern that modular monoliths are designed to avoid. Direct database access creates the tightest possible coupling - to the schema itself. The whole point of module boundaries and integration messages is to provide an abstraction layer that allows modules to evolve independently. Shared database access makes it impossible to refactor the Events module's database without coordinating with every consuming module.
+This is the anti-pattern that modular monoliths are designed to avoid. Direct database access creates the tightest possible coupling - to the schema itself. The whole point of module boundaries and integration messages is to provide an abstraction layer that allows modules to evolve independently. Shared database access makes it impossible to refactor the EventsManagement module's database without coordinating with every consuming module.
 
 ---
 
@@ -206,25 +206,25 @@ public record VenueUpserted
 - Creates coupling to speculative features
 
 **Why Rejected:**
-YAGNI (You Aren't Gonna Need It). We should design for current requirements, not speculative future ones. If the Tickets module later needs additional venue information (e.g., phone number for customer support), we can add it to the message at that time. Over-engineering the message with unused data creates noise and coupling.
+YAGNI (You Aren't Gonna Need It). We should design for current requirements, not speculative future ones. If the Bookings module later needs additional venue information (e.g., phone number for customer support), we can add it to the message at that time. Over-engineering the message with unused data creates noise and coupling.
 
 ## Consequences
 
 ### Positive
 
-1. **Loose Coupling** - Tickets module depends only on the data it actually uses
-   - Events module can refactor Address value object without affecting Tickets
+1. **Loose Coupling** - Bookings module depends only on the data it actually uses
+   - EventsManagement module can refactor Address value object without affecting Bookings
    - Internal implementation details (UK postcode validation) remain private
-   - Clear contract: Tickets only cares about Id, Name, Capacity
+   - Clear contract: Bookings only cares about Id, Name, Capacity
 
 2. **Module Autonomy** - Each module remains independent
-   - Tickets module has its own Venue read model with only needed properties
-   - Events module can evolve Venue aggregate without breaking consumers
+   - Bookings module has its own Venue read model with only needed properties
+   - EventsManagement module can evolve Venue aggregate without breaking consumers
    - Asynchronous messaging maintains availability decoupling
 
 3. **Clear Responsibilities** - Data ownership is explicit
-   - Events module owns Venue aggregate and its complete representation
-   - Tickets module owns its read model with minimal venue data
+   - EventsManagement module owns Venue aggregate and its complete representation
+   - Bookings module owns its read model with minimal venue data
    - No ambiguity about which module is source of truth
 
 4. **Efficient Messaging** - Smaller message payloads
@@ -240,7 +240,7 @@ YAGNI (You Aren't Gonna Need It). We should design for current requirements, not
 ### Negative
 
 1. **Potential for Additional Messages** - If requirements change, may need new messages
-   - Example: If Tickets module later needs venue address, must update VenueUpserted
+   - Example: If Bookings module later needs venue address, must update VenueUpserted
    - Requires coordination between modules (add to message, update consumer)
    - Migration: existing read models may be incomplete until re-synchronized
 
@@ -251,17 +251,17 @@ YAGNI (You Aren't Gonna Need It). We should design for current requirements, not
    - Re-publish all venues to backfill
 
 2. **Data Staleness** - Read model may be slightly out of sync
-   - Eventual consistency between Events and Tickets modules
-   - If venue capacity changes, Tickets module sees old value until message processed
+   - Eventual consistency between EventsManagement and Bookings modules
+   - If venue capacity changes, Bookings module sees old value until message processed
    - Could theoretically allow over-booking in race condition
 
    **Mitigation**: This is inherent to event-driven architecture. In practice:
    - Message processing is fast (~milliseconds)
    - Capacity changes are infrequent
-   - Tickets module validates against its snapshot (capacity check when reserving)
+   - Bookings module validates against its snapshot (capacity check when reserving)
    - Acceptable trade-off for module autonomy
 
-3. **No Cross-Module Validation** - Tickets module can't validate rules requiring excluded data
+3. **No Cross-Module Validation** - Bookings module can't validate rules requiring excluded data
    - Example: Can't validate "no events in certain postcodes" because Address not included
    - Must choose: include data, or don't validate that rule
 
@@ -270,8 +270,8 @@ YAGNI (You Aren't Gonna Need It). We should design for current requirements, not
    - Keep validation in owning module (better)
 
 4. **Duplication of Core Identity Data** - Name and Capacity stored in both modules
-   - Events module: Venue aggregate (source of truth)
-   - Tickets module: Venue read model (cached copy)
+   - EventsManagement module: Venue aggregate (source of truth)
+   - Bookings module: Venue read model (cached copy)
    - Storage overhead (negligible: ~50 bytes per venue)
 
    **Mitigation**: This is intentional denormalization for read performance. The storage cost is trivial compared to benefits of module autonomy.
@@ -315,16 +315,16 @@ When creating a new integration message, follow this process:
 ✅ Id          → Required (identity, foreign key)
 ✅ Name        → Required (display to users)
 ✅ Capacity    → Required (validate ticket quantity)
-❌ Address     → Not needed (Tickets doesn't use it)
+❌ Address     → Not needed (Bookings doesn't use it)
 ❌ CreatedAt   → Not needed (internal timestamp)
 ❌ UpdatedAt   → Not needed (internal timestamp)
 ```
 
 ### Real Example: VenueUpserted Message
 
-**Publishing (Events Module):**
+**Publishing (EventsManagement Module):**
 ```csharp
-// Infrastructure.Events/Venue/VenueRepository.cs
+// Infrastructure.EventsManagement/Venue/VenueRepository.cs
 public void Add(Venue venue, out VenueUpserted message)
 {
     dbContext.Venues.Add(venue);
@@ -341,16 +341,16 @@ public void Add(Venue venue, out VenueUpserted message)
 }
 ```
 
-**Consuming (Tickets Module):**
+**Consuming (Bookings Module):**
 ```csharp
-// Messaging.Tickets/Consumers/VenueUpsertedConsumer.cs
+// Messaging.Bookings/Consumers/VenueUpsertedConsumer.cs
 public class VenueUpsertedConsumer : IConsumer<VenueUpserted>
 {
     public async Task Consume(ConsumeContext<VenueUpserted> context)
     {
         var message = context.Message;
 
-        // Upsert into Tickets module's read model
+        // Upsert into Bookings module's read model
         await upsertVenue.Execute(
             message.Id,
             message.Name,
@@ -361,9 +361,9 @@ public class VenueUpsertedConsumer : IConsumer<VenueUpserted>
 }
 ```
 
-**Read Model (Tickets Module):**
+**Read Model (Bookings Module):**
 ```csharp
-// Domain.Tickets/Venue/Venue.cs
+// Domain.Bookings/Venue/Venue.cs
 public class Venue : Entity
 {
     public string Name { get; set; }
@@ -387,7 +387,7 @@ public class Venue : Entity
 
 ### Migration Path if Requirements Change
 
-If Tickets module later needs venue Address:
+If Bookings module later needs venue Address:
 
 ```csharp
 // 1. Add to VenueUpserted message
@@ -399,7 +399,7 @@ public record VenueUpserted
     public AddressDto Address { get; init; }  // NEW PROPERTY
 }
 
-// 2. Update Tickets read model
+// 2. Update Bookings read model
 public class Venue : Entity
 {
     public string Name { get; set; }
@@ -418,7 +418,7 @@ public async Task Consume(ConsumeContext<VenueUpserted> context)
     );
 }
 
-// 4. Re-publish all venues to backfill Address in Tickets read model
+// 4. Re-publish all venues to backfill Address in Bookings read model
 // (One-time data migration)
 ```
 
@@ -453,8 +453,8 @@ This is straightforward and non-breaking for other consumers.
 
 **Key Principle**: Send what consumers NEED, not what they MIGHT need or what's AVAILABLE.
 
-**For VenueUpserted**: Send Id, Name, Capacity. Exclude Address (Tickets module doesn't use it).
+**For VenueUpserted**: Send Id, Name, Capacity. Exclude Address (Bookings module doesn't use it).
 
 **Rationale**: Minimizes coupling, preserves module autonomy, allows independent evolution.
 
-**Result**: Events module can refactor Venue aggregate internals (Address value object, validation rules) without affecting Tickets module. Tickets module has everything it needs to fulfill its responsibilities.
+**Result**: EventsManagement module can refactor Venue aggregate internals (Address value object, validation rules) without affecting Bookings module. Bookings module has everything it needs to fulfill its responsibilities.

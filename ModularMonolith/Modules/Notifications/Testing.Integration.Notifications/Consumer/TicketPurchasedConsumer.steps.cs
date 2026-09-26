@@ -3,7 +3,7 @@ using Infrastructure.Configuration;
 using Infrastructure.Notifications.Core;
 using Infrastructure.Notifications.Core.Configuration;
 using MassTransit;
-using Messages.Tickets;
+using Messages.Bookings;
 using Messaging.Notifications.Consumers;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;

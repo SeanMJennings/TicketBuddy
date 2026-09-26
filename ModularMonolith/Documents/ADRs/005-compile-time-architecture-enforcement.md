@@ -20,7 +20,7 @@ We need a mechanism to enforce architectural rules such as:
 
 **Previous Approach: Runtime Architecture Tests**
 
-We initially used NUnit-based architecture tests in `Testing.Architecture.Events`:
+We initially used NUnit-based architecture tests in `Testing.Architecture.EventsManagement`:
 ```csharp
 [Test]
 public void Domain_layer_should_only_reference_shared_domain()
@@ -56,7 +56,7 @@ We will use **Roslyn analyzers** packaged as analyzer projects to enforce archit
 
 **Pattern:**
 
-Each module has an `Architecture.{Module}` analyzer project (e.g., `Architecture.Events`) that:
+Each module has an `Architecture.{Module}` analyzer project (e.g., `Architecture.EventsManagement`) that:
 1. Implements `DiagnosticAnalyzer` to inspect compilation references
 2. Defines layer-specific rules (Domain, Application, Infrastructure, etc.)
 3. Reports violations as compiler errors during build
@@ -72,14 +72,14 @@ Common enforcement logic will be extracted to `Architecture.Common` containing:
 **Diagnostic ID Convention:**
 
 Diagnostic IDs follow the pattern: `ARCH_{MODULE}_{NNN}`
-- Events module: `ARCH_EVENT_001`, `ARCH_EVENT_002`, etc.
-- Tickets module: `ARCH_TICKETS_001`, `ARCH_TICKETS_002`, etc.
+- EventsManagement module: `ARCH_EVENTSMANAGEMENT_001`, `ARCH_EVENTSMANAGEMENT_002`, etc.
+- Bookings module: `ARCH_BOOKINGS_001`, `ARCH_BOOKINGS_002`, etc.
 - Global rules: `ARCH_001`, `ARCH_002`, etc. (no module prefix)
 
-**Implementation Example (Events Module):**
+**Implementation Example (EventsManagement Module):**
 
 ```csharp
-// Architecture.Events/ProjectDependencies/ProjectDependenciesGuardian.cs
+// Architecture.EventsManagement/ProjectDependencies/ProjectDependenciesGuardian.cs
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class ProjectDependenciesGuardian : DiagnosticAnalyzer
 {
@@ -112,11 +112,11 @@ public sealed class ProjectDependenciesGuardian : DiagnosticAnalyzer
     }
 }
 
-// Architecture.Events/ProjectDependencies/Rules/DomainLayerRule.cs
+// Architecture.EventsManagement/ProjectDependencies/Rules/DomainLayerRule.cs
 internal sealed class DomainLayerRule : LayerRuleBase
 {
     public override DiagnosticDescriptor Descriptor { get; } = new(
-        id: "ARCH_EVENT_001",
+        id: "ARCH_EVENTSMANAGEMENT_001",
         title: "Invalid Domain layer reference",
         messageFormat: "{0} cannot reference {1}. Domain layer may only reference shared Domain.",
         category: "Architecture",
@@ -162,9 +162,9 @@ internal sealed class DomainLayerRule : LayerRuleBase
 Projects reference the analyzer via `ProjectReference`:
 
 ```xml
-<!-- Domain.Events/Domain.Events.csproj -->
+<!-- Domain.EventsManagement/Domain.EventsManagement.csproj -->
 <ItemGroup>
-    <ProjectReference Include="..\Architecture.Events\Architecture.Events.csproj"
+    <ProjectReference Include="..\Architecture.EventsManagement\Architecture.EventsManagement.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
 </ItemGroup>
@@ -192,7 +192,7 @@ public class ModuleArchitectureTests
 
 **Pros:**
 - Familiar testing approach (NUnit)
-- Already implemented for Events module
+- Already implemented for EventsManagement module
 - Easy to write and understand
 - Can use assertion libraries (Shouldly, FluentAssertions)
 - Flexible - can check any aspect of assembly structure
@@ -248,8 +248,8 @@ Humans are fallible. Reviewers may miss violations, especially in large PRs with
 public void Domain_should_not_depend_on_infrastructure()
 {
     Types.InAssembly(typeof(Event).Assembly)
-        .That().ResideInNamespace("Domain.Events")
-        .Should().NotHaveDependencyOn("Infrastructure.Events")
+        .That().ResideInNamespace("Domain.EventsManagement")
+        .Should().NotHaveDependencyOn("Infrastructure.EventsManagement")
         .GetResult().IsSuccessful.Should().BeTrue();
 }
 ```
@@ -286,7 +286,7 @@ Additionally, introducing a third-party library adds dependency risk and learnin
 
 ```powershell
 # Validate-Architecture.ps1
-$domainCsproj = [xml](Get-Content "Domain.Events/Domain.Events.csproj")
+$domainCsproj = [xml](Get-Content "Domain.EventsManagement/Domain.EventsManagement.csproj")
 $references = $domainCsproj.Project.ItemGroup.ProjectReference.Include
 
 if ($references -match "Infrastructure") {
@@ -328,7 +328,7 @@ Roslyn analyzers are the **standard, supported way** to perform compile-time ana
 
 ```bash
 # .git/hooks/pre-commit
-dotnet test Testing.Architecture.Events || exit 1
+dotnet test Testing.Architecture.EventsManagement || exit 1
 ```
 
 **Pros:**
@@ -413,7 +413,7 @@ Roslyn analyzers provide real-time feedback in the IDE with squiggly lines and e
    - Learning curve for Roslyn analyzer API
    - Migration effort from existing runtime tests
 
-   **Mitigation**: After implementing first analyzer (Events), pattern is established. New modules copy the pattern with minimal changes. Architecture.Common will reduce duplication further.
+   **Mitigation**: After implementing first analyzer (EventsManagement), pattern is established. New modules copy the pattern with minimal changes. Architecture.Common will reduce duplication further.
 
 2. **Debugging Complexity**
    - Analyzers run during compilation (harder to debug than tests)
@@ -521,7 +521,7 @@ internal static class KnownAssemblies
 
 **4. Implement Layer Rules:**
 
-Copy rule templates from `Architecture.Events`, updating:
+Copy rule templates from `Architecture.EventsManagement`, updating:
 - Diagnostic IDs: `ARCH_PAYMENTS_001`, `ARCH_PAYMENTS_002`, etc.
 - Target assemblies: `Domain.Payments`, `Application.Payments`, etc.
 - Error messages: Reference Payments module
@@ -539,7 +539,7 @@ public sealed class ProjectDependenciesGuardian : DiagnosticAnalyzer
         // ... all layer rules
     ];
 
-    // ... same implementation as Events
+    // ... same implementation as EventsManagement
 }
 ```
 
@@ -559,9 +559,9 @@ public sealed class ProjectDependenciesGuardian : DiagnosticAnalyzer
 **Format:** `ARCH_{MODULE}_{NNN}`
 
 **Examples:**
-- `ARCH_EVENT_001` - Events module, Domain layer rule
-- `ARCH_EVENT_002` - Events module, Application layer rule
-- `ARCH_TICKETS_001` - Tickets module, Domain layer rule
+- `ARCH_EVENTSMANAGEMENT_001` - EventsManagement module, Domain layer rule
+- `ARCH_EVENTSMANAGEMENT_002` - EventsManagement module, Application layer rule
+- `ARCH_BOOKINGS_001` - Bookings module, Domain layer rule
 - `ARCH_001` - Global rule (no module prefix)
 
 **Numbering:**
@@ -570,32 +570,32 @@ public sealed class ProjectDependenciesGuardian : DiagnosticAnalyzer
 - Keep a mapping in each `ProjectDependenciesGuardian.cs`:
 
 ```csharp
-// Diagnostic IDs for Events module:
-// ARCH_EVENT_001 - Domain layer dependencies
-// ARCH_EVENT_002 - Application layer dependencies
-// ARCH_EVENT_003 - Controllers layer dependencies
-// ARCH_EVENT_004 - Infrastructure layer dependencies
-// ARCH_EVENT_005 - Messages layer dependencies
-// ARCH_EVENT_006 - Messaging layer dependencies
+// Diagnostic IDs for EventsManagement module:
+// ARCH_EVENTSMANAGEMENT_001 - Domain layer dependencies
+// ARCH_EVENTSMANAGEMENT_002 - Application layer dependencies
+// ARCH_EVENTSMANAGEMENT_003 - Controllers layer dependencies
+// ARCH_EVENTSMANAGEMENT_004 - Infrastructure layer dependencies
+// ARCH_EVENTSMANAGEMENT_005 - Messages layer dependencies
+// ARCH_EVENTSMANAGEMENT_006 - Messaging layer dependencies
 ```
 
 ### Migration from Runtime Tests
 
-**Events module migration (completed):**
-1. Created `Architecture.Events` project
+**EventsManagement module migration (completed):**
+1. Created `Architecture.EventsManagement` project
 2. Implemented `ProjectDependenciesGuardian` with layer rules
-3. Removed `Testing.Architecture.Events` project
+3. Removed `Testing.Architecture.EventsManagement` project
 4. Deleted runtime tests (`Module.specs.cs`, `Module.steps.cs`)
-5. Updated all Events layer projects to reference analyzer
+5. Updated all EventsManagement layer projects to reference analyzer
 
 **Future module migrations:**
-1. Tickets module - follow Events pattern
-2. Keycloak.Users module - follow Events pattern
+1. Bookings module - follow EventsManagement pattern
+2. Keycloak.Users module - follow EventsManagement pattern
 3. Any new modules - use analyzer from start
 
 ### Architecture.Common Extraction (Future Work)
 
-When second module (Tickets) implements analyzers, extract shared code:
+When second module (Bookings) implements analyzers, extract shared code:
 
 **Shared Components:**
 - `ILayerRule` interface
@@ -612,8 +612,8 @@ When second module (Tickets) implements analyzers, extract shared code:
 **Scenario:** Developer tries to add Infrastructure reference to Domain layer
 
 ```csharp
-// Domain.Events/Event/Event.cs
-using Infrastructure.Events; // ❌ Violation!
+// Domain.EventsManagement/Event/Event.cs
+using Infrastructure.EventsManagement; // ❌ Violation!
 
 public class Event : AggregateRoot
 {
@@ -623,15 +623,15 @@ public class Event : AggregateRoot
 
 **What Happens:**
 
-1. **IDE shows squiggly line** under `using Infrastructure.Events`
+1. **IDE shows squiggly line** under `using Infrastructure.EventsManagement`
 2. **Hover message:**
    ```
-   Error ARCH_EVENT_001: Domain.Events cannot reference Infrastructure.Events.
+   Error ARCH_EVENTSMANAGEMENT_001: Domain.EventsManagement cannot reference Infrastructure.EventsManagement.
    Domain layer may only reference shared Domain.
    ```
 3. **Build fails:**
    ```
-   Domain.Events.csproj(1,1): error ARCH_EVENT_001: Domain.Events cannot reference Infrastructure.Events.
+   Domain.EventsManagement.csproj(1,1): error ARCH_EVENTSMANAGEMENT_001: Domain.EventsManagement cannot reference Infrastructure.EventsManagement.
    Domain layer may only reference shared Domain.
    ```
 
@@ -662,16 +662,16 @@ public class Event : AggregateRoot
 
 **Testing analyzer (future):**
 ```csharp
-// Architecture.Events.Tests/DomainLayerRuleTests.cs
+// Architecture.EventsManagement.Tests/DomainLayerRuleTests.cs
 [Test]
 public async Task DomainLayerRule_WhenInfrastructureReferenced_ReportsDiagnostic()
 {
     var testCode = @"
         // Domain project referencing Infrastructure
-        using Infrastructure.Events;
+        using Infrastructure.EventsManagement;
     ";
 
-    var expected = new DiagnosticResult("ARCH_EVENT_001", DiagnosticSeverity.Error);
+    var expected = new DiagnosticResult("ARCH_EVENTSMANAGEMENT_001", DiagnosticSeverity.Error);
     await VerifyAnalyzer(testCode, expected);
 }
 ```
@@ -696,8 +696,8 @@ public async Task DomainLayerRule_WhenInfrastructureReferenced_ReportsDiagnostic
 - [Roslyn Analyzers Documentation](https://learn.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/tutorials/how-to-write-csharp-analyzer-code-fix)
 - [Microsoft.CodeAnalysis.Analyzers](https://www.nuget.org/packages/Microsoft.CodeAnalysis.Analyzers)
 - [DiagnosticAnalyzer Class](https://learn.microsoft.com/en-us/dotnet/api/microsoft.codeanalysis.diagnostics.diagnosticanalyzer)
-- Implementation commit: `fc7410f` (Events module architecture enforcement)
-- Events module implementation: `Modules/Events/Architecture.Events/`
+- Implementation commit: `fc7410f` (EventsManagement module architecture enforcement)
+- EventsManagement module implementation: `Modules/EventsManagement/Architecture.EventsManagement/`
 
 ---
 
@@ -709,7 +709,7 @@ public async Task DomainLayerRule_WhenInfrastructureReferenced_ReportsDiagnostic
 
 **Pattern**: Each module has `Architecture.{Module}` project with layer rules. Shared logic extracted to `Architecture.Common`.
 
-**Diagnostic IDs**: `ARCH_{MODULE}_{NNN}` (e.g., `ARCH_EVENT_001`, `ARCH_TICKETS_001`)
+**Diagnostic IDs**: `ARCH_{MODULE}_{NNN}` (e.g., `ARCH_EVENTSMANAGEMENT_001`, `ARCH_BOOKINGS_001`)
 
 **Rationale**: Fail-fast feedback loop. Developers see violations as they type. Can't skip enforcement. Integrates with standard tooling. Better DX.
 

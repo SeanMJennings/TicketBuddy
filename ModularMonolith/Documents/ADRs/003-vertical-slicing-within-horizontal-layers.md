@@ -11,19 +11,19 @@
 The TicketBuddy modular monolith initially organized code using **pure horizontal layering** as described in ADR-001:
 
 ```
-Modules/Events/
-├── Domain.Events/
+Modules/EventsManagement/
+├── Domain.EventsManagement/
 │   ├── Entities/Event.cs
 │   ├── Services/EventsValidator.cs
 │   └── Contracts/IPersistEvents.cs
-├── Application.Events/
+├── Application.EventsManagement/
 │   ├── Commands/EventCommands.cs     # All commands grouped together
 │   └── Queries/EventQueries.cs       # All queries grouped together
-├── Infrastructure.Events/
+├── Infrastructure.EventsManagement/
 │   └── Persistence/
 │       ├── EventRepository.cs        # All persistence in one area
-│       └── EventDbContext.cs
-└── Controllers.Events/
+│       └── EventManagementDbContext.cs
+└── Controllers.EventsManagement/
     └── EventController.cs            # All endpoints in one controller
 ```
 
@@ -61,29 +61,29 @@ We will organize code using **vertical slices within horizontal layers**.
 ### New Structure
 
 ```
-Modules/Events/
-├── Domain.Events/
+Modules/EventsManagement/
+├── Domain.EventsManagement/
 │   ├── Event.cs                      # Aggregate root at layer root
 │   ├── EventsValidator.cs            # Domain services at layer root
 │   ├── IPersistEvents.cs             # Contracts at layer root
 │   └── IEventsUnitOfWork.cs
 │
-├── Application.Events/
+├── Application.EventsManagement/
 │   ├── CreateEvent.cs                # One behavior = One file
 │   ├── UpdateEvent.cs                # One behavior = One file
 │   ├── GetEvents.cs                  # One behavior = One file
 │   ├── GetEventById.cs               # One behavior = One file
 │   └── MarkEventAsSoldOut.cs         # One behavior = One file
 │
-├── Infrastructure.Events/
+├── Infrastructure.EventsManagement/
 │   ├── Core/                         # Shared infrastructure
-│   │   ├── EventDbContext.cs
+│   │   ├── EventManagementDbContext.cs
 │   │   ├── UnitOfWork.cs
 │   │   └── Configuration/
 │   └── Event/                        # Entity-specific infrastructure
 │       └── EventRepository.cs
 │
-└── Controllers.Events/
+└── Controllers.EventsManagement/
     ├── Event/                        # Grouped by entity/aggregate
     │   ├── CreateEventEndpoint.cs    # One endpoint = One file
     │   ├── UpdateEventEndpoint.cs    # One endpoint = One file
@@ -97,7 +97,7 @@ Modules/Events/
 
 **Application Layer** - One class per behavior:
 ```csharp
-// Application.Events/CreateEvent.cs
+// Application.EventsManagement/CreateEvent.cs
 public class CreateEvent(EventsValidator validator, IPersistEvents repository, IEventsUnitOfWork unitOfWork)
 {
     public async Task<Guid> Execute(EventName name, DateTimeOffset start, DateTimeOffset end, Venue venue, Money price)
@@ -109,7 +109,7 @@ public class CreateEvent(EventsValidator validator, IPersistEvents repository, I
 
 **Controllers Layer** - One endpoint per file:
 ```csharp
-// Controllers.Events/Event/CreateEventEndpoint.cs
+// Controllers.EventsManagement/Event/CreateEventEndpoint.cs
 [ApiController]
 [Authorize(Roles = Roles.Admin)]
 public class CreateEventEndpoint(CreateEvent createEvent) : ControllerBase
@@ -125,11 +125,11 @@ public class CreateEventEndpoint(CreateEvent createEvent) : ControllerBase
 
 ### Pattern: Deeper Vertical Slicing for Complex Behaviors
 
-For modules with more complexity (e.g., Tickets), vertical slices can go deeper:
+For modules with more complexity (e.g., Bookings), vertical slices can go deeper:
 
 ```
-Modules/Tickets/
-├── Application.Tickets/
+Modules/Bookings/
+├── Application.Bookings/
 │   ├── Core/                         # Shared application utilities
 │   ├── Ticket/                       # Organized by entity/aggregate
 │   │   ├── ReserveTickets/           # Complex behavior gets folder
@@ -147,7 +147,7 @@ Modules/Tickets/
 │   └── User/
 │       └── UpsertUser.cs
 │
-├── Domain.Tickets/
+├── Domain.Bookings/
 │   ├── Core/                         # Shared domain logic
 │   ├── Ticket/                       # Organized by aggregate
 │   │   ├── Ticket.cs
@@ -161,9 +161,9 @@ Modules/Tickets/
 │   └── User/                         # Read model for User
 │       └── IPersistUsers.cs
 │
-└── Infrastructure.Tickets/
+└── Infrastructure.Bookings/
     ├── Core/                         # Shared infrastructure
-    │   ├── TicketDbContext.cs
+    │   ├── BookingDbContext.cs
     │   └── Configuration/
     ├── Ticket/                       # Ticket aggregate infrastructure
     │   ├── TicketRepository.cs
@@ -186,7 +186,7 @@ Modules/Tickets/
 
 **Structure:**
 ```
-Application.Events/
+Application.EventsManagement/
 ├── Commands/
 │   └── EventCommands.cs      # All commands in one class
 └── Queries/
@@ -214,7 +214,7 @@ Application.Events/
 
 **Structure:**
 ```
-Modules/Events/
+Modules/EventsManagement/
 └── Features/
     ├── CreateEvent/
     │   ├── CreateEvent.cs            # Domain + Application + Infrastructure
@@ -247,11 +247,11 @@ Modules/Events/
 
 **Structure:**
 ```
-Application.Events/
-├── CreateEvent.cs          # namespace Application.Events.CreateEvent
-├── UpdateEvent.cs          # namespace Application.Events.UpdateEvent
-├── GetEvents.cs            # namespace Application.Events.GetEvents
-└── GetEventById.cs         # namespace Application.Events.GetEventById
+Application.EventsManagement/
+├── CreateEvent.cs          # namespace Application.EventsManagement.CreateEvent
+├── UpdateEvent.cs          # namespace Application.EventsManagement.UpdateEvent
+├── GetEvents.cs            # namespace Application.EventsManagement.GetEvents
+└── GetEventById.cs         # namespace Application.EventsManagement.GetEventById
 ```
 
 **Pros:**
@@ -266,7 +266,7 @@ Application.Events/
 - Namespace-based organization less visible in IDEs
 - Harder to find related behaviors (e.g., all Ticket operations)
 
-**Why Rejected**: While simpler, this doesn't scale well for modules with many behaviors (e.g., Tickets module has 10+ behaviors). The flat structure makes it harder to understand the module's capabilities at a glance. Folders provide valuable visual organization.
+**Why Rejected**: While simpler, this doesn't scale well for modules with many behaviors (e.g., Bookings module has 10+ behaviors). The flat structure makes it harder to understand the module's capabilities at a glance. Folders provide valuable visual organization.
 
 ---
 
@@ -274,7 +274,7 @@ Application.Events/
 
 **Structure:**
 ```
-Application.Events/
+Application.EventsManagement/
 ├── Commands/
 │   ├── CreateEvent/
 │   │   └── CreateEvent.cs
@@ -309,11 +309,11 @@ Application.Events/
    - Related behaviors grouped by entity (all Ticket operations under `Ticket/`)
 
 2. **Self-documenting structure** - Directory structure communicates module capabilities
-   - Looking at `Application.Events/` immediately shows what the module does
+   - Looking at `Application.EventsManagement/` immediately shows what the module does
    - Folder names use ubiquitous language from the domain
 
 3. **Easier navigation** - Finding code for a feature requires less jumping
-   - Work on "Reserve Tickets"? → `Application.Tickets/Ticket/ReserveTickets/`
+   - Work on "Reserve Tickets"? → `Application.Bookings/Ticket/ReserveTickets/`
    - All related files in one place (behavior + its dependencies)
 
 4. **Smaller files** - One class per file, focused on single behavior
@@ -331,8 +331,8 @@ Application.Events/
    - Easy to test domain logic in isolation
 
 7. **Scalable organization** - Pattern scales from simple to complex modules
-   - Events module: Simple (flat files per behavior)
-   - Tickets module: Complex (folders for behaviors with multiple files)
+   - EventsManagement module: Simple (flat files per behavior)
+   - Bookings module: Complex (folders for behaviors with multiple files)
 
 8. **Better code review** - PRs show clear feature scope
    - Files changed: `CreateEvent.cs`, `CreateEventEndpoint.cs`, `Event.cs`
@@ -346,12 +346,12 @@ Application.Events/
    - Mitigation: Better organization and smaller files outweigh this cost
 
 2. **Deeper nesting** - Complex behaviors create nested folders
-   - Example: `Application.Tickets/Ticket/ReserveTickets/ReserveTickets.cs`
+   - Example: `Application.Bookings/Ticket/ReserveTickets/ReserveTickets.cs`
    - 4 levels deep (module → layer → entity → behavior)
    - Mitigation: Only apply deep nesting when behavior complexity justifies it
 
 3. **Duplication of folder names** - Some folders and files share names
-   - `Application.Tickets/Ticket/ReserveTickets/ReserveTickets.cs`
+   - `Application.Bookings/Ticket/ReserveTickets/ReserveTickets.cs`
    - Folder `ReserveTickets` contains class `ReserveTickets`
    - Mitigation: This is intentional; folder groups related files, class implements behavior
 
@@ -361,8 +361,8 @@ Application.Events/
    - Mitigation: This ADR + updated architecture guide provide guidance
 
 5. **Inconsistency between modules** - Simple vs complex modules look different
-   - Events: Flat files (`CreateEvent.cs`)
-   - Tickets: Nested folders (`Ticket/ReserveTickets/`)
+   - EventsManagement: Flat files (`CreateEvent.cs`)
+   - Bookings: Nested folders (`Ticket/ReserveTickets/`)
    - Mitigation: Inconsistency reflects actual complexity difference; pattern is consistent
 
 ### Neutral
@@ -378,8 +378,8 @@ Application.Events/
    - Different, not worse (arguably better for discoverability)
 
 3. **Namespace strategy varies** - Flexibility in namespace depth
-   - Can use flat: `namespace Application.Events;`
-   - Or nested: `namespace Application.Events.CreateEvent;`
+   - Can use flat: `namespace Application.EventsManagement;`
+   - Or nested: `namespace Application.EventsManagement.CreateEvent;`
    - Current approach uses flat for simplicity
 
 ## Implementation Notes
@@ -404,7 +404,7 @@ Application.Events/
 
 **Shared code:**
 - Core/shared utilities go in `Core/` folder at layer root
-- Example: `Infrastructure.Tickets/Core/TicketDbContext.cs`
+- Example: `Infrastructure.Bookings/Core/BookingDbContext.cs`
 - Entity-specific code goes in entity folder
 
 ### Migration Path
@@ -432,7 +432,7 @@ This ADR documents a refactor completed in commits:
 ### Testing Implications
 
 **No changes to test structure:**
-- Tests still organized by layer (`Testing.Unit.Events`, `Testing.Integration.Events`)
+- Tests still organized by layer (`Testing.Unit.EventsManagement`, `Testing.Integration.EventsManagement`)
 - BDD specs and steps pattern unchanged
 - Architecture tests verify layer dependencies (unaffected by internal organization)
 

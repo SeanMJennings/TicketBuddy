@@ -10,16 +10,16 @@
     </PackageReference>
   </ItemGroup>
 
-  <!-- Include Architecture.Events Analyzer for all Events module projects except the analyzer itself and test projects -->
-  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Events')) AND '$(MSBuildProjectName)' != 'Architecture.Events' AND !$(MSBuildProjectName.Contains('Testing'))">
-    <ProjectReference Include="$(MSBuildThisFileDirectory)Modules\Events\Architecture.Events\Architecture.Events.csproj"
+  <!-- Include Architecture.EventsManagement Analyzer for all EventsManagement module projects except the analyzer itself and test projects -->
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.EventsManagement')) AND '$(MSBuildProjectName)' != 'Architecture.EventsManagement' AND !$(MSBuildProjectName.Contains('Testing'))">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)Modules\EventsManagement\Architecture.EventsManagement\Architecture.EventsManagement.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <!-- Include Architecture.Tickets Analyzer for all Tickets module projects except the analyzer itself and test projects -->
-  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tickets')) AND '$(MSBuildProjectName)' != 'Architecture.Tickets' AND !$(MSBuildProjectName.Contains('Testing'))">
-    <ProjectReference Include="$(MSBuildThisFileDirectory)Modules\Tickets\Architecture.Tickets\Architecture.Tickets.csproj"
+  <!-- Include Architecture.Bookings Analyzer for all Bookings module projects except the analyzer itself and test projects -->
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Bookings')) AND '$(MSBuildProjectName)' != 'Architecture.Bookings' AND !$(MSBuildProjectName.Contains('Testing'))">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)Modules\Bookings\Architecture.Bookings\Architecture.Bookings.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>

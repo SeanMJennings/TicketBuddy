@@ -1,0 +1,21 @@
+﻿using Application.Bookings.Ticket.PurchaseTickets;
+using Controllers.Bookings.Requests;
+using Application;
+using Application.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Controllers.Bookings.Ticket;
+
+[ApiController]
+[Authorize(Roles = UserRoles.Customer)]
+public class PurchaseTicketsEndpoint(PurchaseTickets purchaseTickets) : ControllerBase
+{
+    [HttpPost(Routes.TicketsPurchase)]
+    public async Task<ActionResult> PurchaseTickets([FromRoute] Guid id, [FromBody] TicketPurchasePayload payload)
+    {
+        var userId = User.GetUserId();
+        await purchaseTickets.Execute(id, userId, payload.ticketIds);
+        return NoContent();
+    }
+}

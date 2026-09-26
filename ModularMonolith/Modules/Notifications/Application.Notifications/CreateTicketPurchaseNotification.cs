@@ -4,7 +4,7 @@ namespace Application.Notifications;
 
 public class CreateTicketPurchaseNotification(
     IPersistNotifications repository,
-    INotificationsUnitOfWork unitOfWork)
+    INotificationUnitOfWork unitOfWork)
 {
     public async Task Execute(Guid userId, Guid ticketId, Guid eventId, string eventName)
     {

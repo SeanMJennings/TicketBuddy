@@ -2,10 +2,10 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using Controllers.Events;
-using Controllers.Events.Requests;
-using Controllers.Tickets.Requests;
-using Domain.Tickets.Ticket;
+using Controllers.EventsManagement;
+using Controllers.EventsManagement.Requests;
+using Controllers.Bookings.Requests;
+using Domain.Bookings.Ticket;
 using Keycloak;
 using Keycloak.Requests;
 using Messaging.Keycloak.Users;

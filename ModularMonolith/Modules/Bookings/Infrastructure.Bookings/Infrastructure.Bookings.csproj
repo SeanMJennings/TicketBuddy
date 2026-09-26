@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit.EntityFrameworkCore"/>
+        <PackageReference Include="StackExchange.Redis"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Application.Bookings\Application.Bookings.csproj" />
+      <ProjectReference Include="..\Domain.Bookings\Domain.Bookings.csproj" />
+      <ProjectReference Include="..\..\..\CommonLibraries\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\Messaging.Bookings\Messaging.Bookings.csproj" />
+    </ItemGroup>
+
+</Project>

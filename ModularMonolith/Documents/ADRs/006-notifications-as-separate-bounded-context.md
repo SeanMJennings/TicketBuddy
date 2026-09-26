@@ -13,21 +13,21 @@ The TicketBuddy application needed a user notifications system to inform users a
 - The system should be extensible to support additional notification types (event updates, price changes) and delivery methods (email, push) in future
 - Cross-module communication must respect bounded context boundaries
 
-The existing architecture is a modular monolith with three modules (Events, Tickets, Keycloak.Users), each following hexagonal architecture with ports and adapters, communicating via MassTransit domain events over RabbitMQ.
+The existing architecture is a modular monolith with three modules (EventsManagement, Bookings, Keycloak.Users), each following hexagonal architecture with ports and adapters, communicating via MassTransit domain events over RabbitMQ.
 
 ## Decision
 
 We will implement Notifications as a **separate bounded context** (new module) that:
 
 1. **Owns its own data** - Separate PostgreSQL schema ("Notification") with its own DbContext
-2. **Communicates via domain events** - Consumes `TicketPurchased` events from Tickets module via MassTransit
+2. **Communicates via domain events** - Consumes `TicketPurchased` events from Bookings module via MassTransit
 3. **Exposes REST API with browser polling** - Three endpoints for listing, marking as read, and counting unread notifications
 4. **Follows established module conventions** - Same project structure as existing modules (Domain, Application, Infrastructure, Controllers, Messages, Messaging)
 
 ### Architecture Overview
 
 ```
-Tickets Module                          Notifications Module
+Bookings Module                          Notifications Module
 ┌─────────────────┐                    ┌─────────────────┐
 │ PurchaseTickets │                    │ TicketPurchased │
 │    Use Case     │                    │    Consumer     │
@@ -51,7 +51,7 @@ All endpoints require `[Authorize(Roles = Roles.Customer)]`.
 
 ## Alternatives Considered
 
-### Alternative 1: Notifications as Part of Tickets Module
+### Alternative 1: Notifications as Part of Bookings Module
 
 **Pros:**
 - Simpler initial implementation
@@ -59,11 +59,11 @@ All endpoints require `[Authorize(Roles = Roles.Customer)]`.
 - No cross-module messaging needed
 
 **Cons:**
-- Violates single responsibility - Tickets module would handle both ticketing AND notifications
-- Harder to extend to other notification sources (Events module changes, user registration, etc.)
+- Violates single responsibility - Bookings module would handle both ticketing AND notifications
+- Harder to extend to other notification sources (EventsManagement module changes, user registration, etc.)
 - Tighter coupling between notification logic and ticket logic
 
-**Why Rejected**: Notifications are a cross-cutting concern that will eventually consume events from multiple modules. Embedding in Tickets would create a "god module" and make future extensions awkward.
+**Why Rejected**: Notifications are a cross-cutting concern that will eventually consume events from multiple modules. Embedding in Bookings would create a "god module" and make future extensions awkward.
 
 ### Alternative 2: Real-time Push (WebSockets/SSE)
 

@@ -1,0 +1,10 @@
+﻿namespace Controllers.Bookings;
+
+public static class Routes
+{
+    public const string Events = "events";
+    public const string Tickets = $"{Events}/{{id:guid}}/tickets";
+    public const string TicketsPurchase = $"{Events}/{{id:guid}}/tickets/purchase";
+    public const string TicketsReservation = $"{Events}/{{id:guid}}/tickets/reserve";
+    public const string TicketsPurchased = "tickets/users/me";
+}

@@ -2,8 +2,8 @@
 using System.Net.Http.Json;
 using System.Text;
 using Common.Environment;
-using Controllers.Events;
-using Controllers.Events.Requests;
+using Controllers.EventsManagement;
+using Controllers.EventsManagement.Requests;
 using Application;
 using NUnit.Framework;
 using Shouldly;

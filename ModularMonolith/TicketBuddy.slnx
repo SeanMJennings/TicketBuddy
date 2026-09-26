@@ -67,21 +67,21 @@
     </Project>
   </Folder>
   <Folder Name="/Modules/" />
-  <Folder Name="/Modules/Events/">
-    <Project Path="Modules/Events/Application.Events/Application.Events.csproj" />
-    <Project Path="Modules/Events/Controllers.Events/Controllers.Events.csproj" />
-    <Project Path="Modules/Events/Domain.Events/Domain.Events.csproj" />
-    <Project Path="Modules/Events/Infrastructure.Events/Infrastructure.Events.csproj" />
-    <Project Path="Modules/Events/Messages.Events/Messages.Events.csproj" />
-    <Project Path="Modules/Events/Messaging.Events/Messaging.Events.csproj" />
+  <Folder Name="/Modules/EventsManagement/">
+    <Project Path="Modules/EventsManagement/Application.EventsManagement/Application.EventsManagement.csproj" />
+    <Project Path="Modules/EventsManagement/Controllers.EventsManagement/Controllers.EventsManagement.csproj" />
+    <Project Path="Modules/EventsManagement/Domain.EventsManagement/Domain.EventsManagement.csproj" />
+    <Project Path="Modules/EventsManagement/Infrastructure.EventsManagement/Infrastructure.EventsManagement.csproj" />
+    <Project Path="Modules/EventsManagement/Messages.EventsManagement/Messages.EventsManagement.csproj" />
+    <Project Path="Modules/EventsManagement/Messaging.EventsManagement/Messaging.EventsManagement.csproj" />
   </Folder>
-  <Folder Name="/Modules/Events/Architecture/">
-    <Project Path="Modules/Events/Architecture.Events/Architecture.Events.csproj" />
+  <Folder Name="/Modules/EventsManagement/Architecture/">
+    <Project Path="Modules/EventsManagement/Architecture.EventsManagement/Architecture.EventsManagement.csproj" />
   </Folder>
-  <Folder Name="/Modules/Events/Testing/">
-    <Project Path="Modules/Events/Testing.Architecture.Events/Testing.Architecture.Events.csproj" />
-    <Project Path="Modules/Events/Testing.Integration.Events/Testing.Integration.Events.csproj" />
-    <Project Path="Modules/Events/Testing.Unit.Events/Testing.Unit.Events.csproj" />
+  <Folder Name="/Modules/EventsManagement/Testing/">
+    <Project Path="Modules/EventsManagement/Testing.Architecture.EventsManagement/Testing.Architecture.EventsManagement.csproj" />
+    <Project Path="Modules/EventsManagement/Testing.Integration.EventsManagement/Testing.Integration.EventsManagement.csproj" />
+    <Project Path="Modules/EventsManagement/Testing.Unit.EventsManagement/Testing.Unit.EventsManagement.csproj" />
   </Folder>
   <Folder Name="/Modules/Keycloak.Users/">
     <Project Path="Modules/Keycloak.Users/Infrastructure.Keycloak/Infrastructure.Keycloak.csproj" />
@@ -103,21 +103,21 @@
     <Project Path="Modules/Notifications/Testing.Integration.Notifications/Testing.Integration.Notifications.csproj" />
     <Project Path="Modules/Notifications/Testing.Unit.Notifications/Testing.Unit.Notifications.csproj" />
   </Folder>
-  <Folder Name="/Modules/Tickets/">
-    <Project Path="Modules/Tickets/Application.Tickets/Application.Tickets.csproj" />
-    <Project Path="Modules/Tickets/Controllers.Tickets/Controllers.Tickets.csproj" />
-    <Project Path="Modules/Tickets/Domain.Tickets/Domain.Tickets.csproj" />
-    <Project Path="Modules/Tickets/Infrastructure.Tickets/Infrastructure.Tickets.csproj" />
-    <Project Path="Modules/Tickets/Messages.Tickets/Messages.Tickets.csproj" />
-    <Project Path="Modules/Tickets/Messaging.Tickets/Messaging.Tickets.csproj" />
+  <Folder Name="/Modules/Bookings/">
+    <Project Path="Modules/Bookings/Application.Bookings/Application.Bookings.csproj" />
+    <Project Path="Modules/Bookings/Controllers.Bookings/Controllers.Bookings.csproj" />
+    <Project Path="Modules/Bookings/Domain.Bookings/Domain.Bookings.csproj" />
+    <Project Path="Modules/Bookings/Infrastructure.Bookings/Infrastructure.Bookings.csproj" />
+    <Project Path="Modules/Bookings/Messages.Bookings/Messages.Bookings.csproj" />
+    <Project Path="Modules/Bookings/Messaging.Bookings/Messaging.Bookings.csproj" />
   </Folder>
-  <Folder Name="/Modules/Tickets/Architecture/">
-    <Project Path="Modules/Tickets/Architecture.Tickets/Architecture.Tickets.csproj" />
+  <Folder Name="/Modules/Bookings/Architecture/">
+    <Project Path="Modules/Bookings/Architecture.Bookings/Architecture.Bookings.csproj" />
   </Folder>
-  <Folder Name="/Modules/Tickets/Testing/">
-    <Project Path="Modules/Tickets/Testing.Architecture.Tickets/Testing.Architecture.Tickets.csproj" />
-    <Project Path="Modules/Tickets/Testing.Integration.Tickets/Testing.Integration.Tickets.csproj" />
-    <Project Path="Modules/Tickets/Testing.Unit.Tickets/Testing.Unit.Tickets.csproj" />
+  <Folder Name="/Modules/Bookings/Testing/">
+    <Project Path="Modules/Bookings/Testing.Architecture.Bookings/Testing.Architecture.Bookings.csproj" />
+    <Project Path="Modules/Bookings/Testing.Integration.Bookings/Testing.Integration.Bookings.csproj" />
+    <Project Path="Modules/Bookings/Testing.Unit.Bookings/Testing.Unit.Bookings.csproj" />
   </Folder>
   <Folder Name="/Solution/">
     <File Path="../.gitignore" />

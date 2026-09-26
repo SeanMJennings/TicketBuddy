@@ -1,6 +1,6 @@
 using Application.Notifications;
 using MassTransit;
-using Messages.Tickets;
+using Messages.Bookings;
 
 namespace Messaging.Notifications.Consumers;
 

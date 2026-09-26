@@ -1,4 +1,4 @@
-﻿using Controllers.Events.Requests;
+﻿using Controllers.EventsManagement.Requests;
 using Dataseeder.Infrastructure;
 using Dataseeder.SeedData;
 

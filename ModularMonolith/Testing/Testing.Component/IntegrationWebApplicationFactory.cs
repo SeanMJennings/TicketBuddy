@@ -1,5 +1,5 @@
-﻿using Infrastructure.Events.Core.Configuration;
-using Infrastructure.Tickets.Configuration;
+﻿using Infrastructure.EventsManagement.Core.Configuration;
+using Infrastructure.Bookings.Configuration;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -25,8 +25,8 @@ public class IntegrationWebApplicationFactory<TProgram>(string connectionString,
             {
                 services.AddMassTransitTestHarness(x =>
                 {
-                    x.AddEventsConsumers();
-                    x.AddTicketsConsumers();
+                    x.AddEventsManagementConsumers();
+                    x.AddBookingsConsumers();
                 });
             }
         });

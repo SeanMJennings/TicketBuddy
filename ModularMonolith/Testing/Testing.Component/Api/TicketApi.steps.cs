@@ -1,12 +1,12 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
-using Controllers.Events.Requests;
-using Controllers.Tickets.Requests;
-using Domain.Tickets.Ticket;
+using Controllers.EventsManagement.Requests;
+using Controllers.Bookings.Requests;
+using Domain.Bookings.Ticket;
 using Application;
 using MassTransit.Testing;
-using Messages.Events;
+using Messages.EventsManagement;
 using Messaging.Keycloak.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -14,7 +14,7 @@ using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 using Testing;
 using Testing.Containers;
-using Routes = Controllers.Tickets.Routes;
+using Routes = Controllers.Bookings.Routes;
 
 namespace Component.Api;
 
@@ -69,7 +69,7 @@ public partial class TicketApiSpecs : TruncateDbSpecification
     {
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.Add(UserHeaders.UserType, nameof(UserType.Admin));
-        var venue1Response = await client.PostAsJsonAsync(Controllers.Events.Routes.Venues, new VenuePayload("Old Trafford", "Sir Matt Busby Way", "Manchester", "M16 0RA", 17));
+        var venue1Response = await client.PostAsJsonAsync(Controllers.EventsManagement.Routes.Venues, new VenuePayload("Old Trafford", "Sir Matt Busby Way", "Manchester", "M16 0RA", 17));
         venue1Response.StatusCode.ShouldBe(HttpStatusCode.Created);
         venue1Id = JsonSerialization.Deserialize<Guid>(await venue1Response.Content.ReadAsStringAsync());
         await testHarness.Consumed.Any<VenueUpserted>(x => x.Context.Message.Id == venue1Id);

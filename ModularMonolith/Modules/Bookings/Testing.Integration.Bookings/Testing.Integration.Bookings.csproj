@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+        <RootNamespace>Integration</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\CommonLibraries\Testing\Testing.csproj" />
+        <ProjectReference Include="..\..\..\Database\Migrations\Migrations.csproj" />
+        <ProjectReference Include="..\Controllers.Bookings\Controllers.Bookings.csproj" />
+        <ProjectReference Include="..\Infrastructure.Bookings\Infrastructure.Bookings.csproj" />
+        <ProjectReference Include="..\Messages.Bookings\Messages.Bookings.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NUnit3TestAdapter"/>
+        <PackageReference Include="NUnit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="TicketController.steps.cs">
+        <DependentUpon>TicketController.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Bookings\GetTicketsForEvent.steps.cs">
+        <DependentUpon>GetTicketsForEvent.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Bookings\PurchaseTickets.steps.cs">
+        <DependentUpon>PurchaseTickets.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Bookings\ReserveTickets.steps.cs">
+        <DependentUpon>ReserveTickets.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Users\UpsertUser.steps.cs">
+        <DependentUpon>UpsertUser.specs.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

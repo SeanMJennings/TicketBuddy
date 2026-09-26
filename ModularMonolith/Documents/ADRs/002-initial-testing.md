@@ -112,7 +112,7 @@ public partial class EventSpecs
 ```csharp
 // Event.steps.cs
 using BDD;
-using Domain.Events.Entities;
+using Domain.EventsManagement.Entities;
 using Domain.Primitives;
 using Shouldly;
 
@@ -183,7 +183,7 @@ public partial class EventSpecs : Specification
 
 **Location:** `Modules/{Module}/Testing.Unit.{Module}/`
 
-**See:** `Modules/Events/Testing.Unit.Events/Event.specs.cs`
+**See:** `Modules/EventsManagement/Testing.Unit.EventsManagement/Event.specs.cs`
 
 ---
 
@@ -257,7 +257,7 @@ public partial class EventControllerSpecs
 
 **Location:** `Modules/{Module}/Testing.Integration.{Module}/`
 
-**See:** `Modules/Events/Testing.Integration.Events/EventController.specs.cs`
+**See:** `Modules/EventsManagement/Testing.Integration.EventsManagement/EventController.specs.cs`
 
 ---
 
@@ -280,7 +280,7 @@ public partial class EventControllerSpecs
 
 ```csharp
 // Module.specs.cs
-namespace Testing.Architecture.Events.Modules;
+namespace Testing.Architecture.EventsManagement.Modules;
 
 internal partial class ModuleSpecs
 {
@@ -309,7 +309,7 @@ internal partial class ModuleSpecs
 
 ```csharp
 // Domain.specs.cs
-namespace Testing.Architecture.Events.Domain;
+namespace Testing.Architecture.EventsManagement.Domain;
 
 public partial class DomainSpecs
 {
@@ -346,7 +346,7 @@ public partial class DomainSpecs
 
 **Location:** `Modules/{Module}/Testing.Architecture.{Module}/`
 
-**See:** `Modules/Events/Testing.Architecture.Events/`
+**See:** `Modules/EventsManagement/Testing.Architecture.EventsManagement/`
 
 ---
 
@@ -530,7 +530,7 @@ public partial class TicketBuddySpecs
 
 **Key Characteristics:**
 - Tests business capabilities, not technical implementation
-- Spans multiple modules (Events → Tickets → Users)
+- Spans multiple modules (EventsManagement → Bookings → Users)
 - Verifies complete workflows
 - Uses domain language in test names
 
@@ -607,7 +607,7 @@ dotnet test --filter "FullyQualifiedName~Testing.Acceptance"
 
 **Run specific module tests:**
 ```bash
-dotnet test Modules/Events/Testing.Unit.Events
+dotnet test Modules/EventsManagement/Testing.Unit.EventsManagement
 ```
 
 ---

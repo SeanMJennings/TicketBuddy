@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Api.Middleware;
 using Domain;
-using Infrastructure.Tickets.Configuration;
+using Infrastructure.Bookings.Configuration;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using WebHost;

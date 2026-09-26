@@ -1,0 +1,27 @@
+using System.Text.Json.Serialization;
+using Domain.ValueObjects;
+
+namespace Domain.EventsManagement.Venue;
+
+[JsonConverter(typeof(VenueNameConverter))]
+public readonly struct VenueName(string name) : IEquatable<VenueName>
+{
+    private readonly StringValueObject<VenueName> _value = new(name);
+
+    public override string ToString() => _value.ToString();
+    public override bool Equals(object? obj) => obj is VenueName other && _value.Equals(other._value);
+    public bool Equals(VenueName other) => _value.Equals(other._value);
+    public override int GetHashCode() => _value.GetHashCode();
+    public static bool operator ==(VenueName left, VenueName right) => left._value == right._value;
+    public static bool operator !=(VenueName left, VenueName right) => left._value != right._value;
+    public static implicit operator string(VenueName venueName) => venueName._value;
+    public static implicit operator VenueName(string name) => new(name);
+}
+
+public class VenueNameConverter : StringValueObjectJsonConverter<VenueName>
+{
+    protected override VenueName CreateFromString(string value)
+    {
+        return new VenueName(value);
+    }
+}

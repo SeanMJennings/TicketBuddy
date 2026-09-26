@@ -3,7 +3,7 @@ using Domain.Notifications;
 
 namespace Application.Notifications;
 
-public class MarkNotificationAsRead(IPersistNotifications repository, INotificationsUnitOfWork unitOfWork)
+public class MarkNotificationAsRead(IPersistNotifications repository, INotificationUnitOfWork unitOfWork)
 {
     public async Task Execute(Guid notificationId)
     {

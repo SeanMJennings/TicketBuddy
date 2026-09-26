@@ -1,11 +1,11 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Controllers.Events.Requests;
+using Controllers.EventsManagement.Requests;
 using Dataseeder.Hosting;
-using Domain.Events;
-using Domain.Events.Venue;
+using Domain.EventsManagement;
+using Domain.EventsManagement.Venue;
 using Keycloak;
-using EventRoutes = Controllers.Events.Routes;
+using EventRoutes = Controllers.EventsManagement.Routes;
 
 namespace Dataseeder.Infrastructure;
 

@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+        <RootNamespace>Integration</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\CommonLibraries\Testing\Testing.csproj" />
+      <ProjectReference Include="..\..\..\Database\Migrations\Migrations.csproj" />
+      <ProjectReference Include="..\Controllers.EventsManagement\Controllers.EventsManagement.csproj" />
+      <ProjectReference Include="..\Infrastructure.EventsManagement\Infrastructure.EventsManagement.csproj" />
+      <ProjectReference Include="..\Messages.EventsManagement\Messages.EventsManagement.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NUnit3TestAdapter"/>
+        <PackageReference Include="NUnit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="EventController.steps.cs">
+        <DependentUpon>EventController.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="VenueController.steps.cs">
+        <DependentUpon>VenueController.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="EventsManagement\CreateEvent.steps.cs">
+        <DependentUpon>CreateEvent.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="EventsManagement\EventSoldOutConsumer.steps.cs">
+        <DependentUpon>EventSoldOutConsumer.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="EventsManagement\GetEventById.steps.cs">
+        <DependentUpon>GetEventById.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="EventsManagement\GetEvents.steps.cs">
+        <DependentUpon>GetEvents.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="EventsManagement\UpdateEvent.steps.cs">
+        <DependentUpon>UpdateEvent.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Venues\CreateVenue.steps.cs">
+        <DependentUpon>CreateVenue.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Venues\GetVenues.steps.cs">
+        <DependentUpon>GetVenues.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Venues\UpdateVenue.steps.cs">
+        <DependentUpon>UpdateVenue.specs.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Venues\GetVenuesById.steps.cs">
+        <DependentUpon>GetVenuesById.specs.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

@@ -1,13 +1,13 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text;
-using Controllers.Events;
-using Controllers.Events.Requests;
-using Domain.Events;
+using Controllers.EventsManagement;
+using Controllers.EventsManagement.Requests;
+using Domain.EventsManagement;
 using Domain.ValueObjects;
 using Application;
 using MassTransit.Testing;
-using Messages.Events;
+using Messages.EventsManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Testcontainers.PostgreSql;
@@ -377,7 +377,7 @@ public partial class EventApiSpecs : TruncateDbSpecification
 
     private async Task the_venue_is_created()
     {
-        var theVenue = JsonSerialization.Deserialize<Domain.Events.Venue.Venue>(await content.ReadAsStringAsync());
+        var theVenue = JsonSerialization.Deserialize<Domain.EventsManagement.Venue.Venue>(await content.ReadAsStringAsync());
         response_code.ShouldBe(HttpStatusCode.OK);
         theVenue.Id.ShouldBe(returned_venue_id);
         theVenue.Name.ToString().ShouldBe("Royal Albert Hall");
@@ -394,7 +394,7 @@ public partial class EventApiSpecs : TruncateDbSpecification
 
     private async Task the_venues_are_returned()
     {
-        var theVenues = JsonSerialization.Deserialize<IReadOnlyList<Domain.Events.Venue.Venue>>(await content.ReadAsStringAsync());
+        var theVenues = JsonSerialization.Deserialize<IReadOnlyList<Domain.EventsManagement.Venue.Venue>>(await content.ReadAsStringAsync());
         response_code.ShouldBe(HttpStatusCode.OK);
         theVenues.Count.ShouldBeGreaterThanOrEqualTo(3);
         theVenues.Any(v => v.Id == venue1Id).ShouldBeTrue();
@@ -402,7 +402,7 @@ public partial class EventApiSpecs : TruncateDbSpecification
 
     private async Task the_venue_is_returned()
     {
-        var theVenue = JsonSerialization.Deserialize<Domain.Events.Venue.Venue>(await content.ReadAsStringAsync());
+        var theVenue = JsonSerialization.Deserialize<Domain.EventsManagement.Venue.Venue>(await content.ReadAsStringAsync());
         response_code.ShouldBe(HttpStatusCode.OK);
         theVenue.Id.ShouldBe(returned_venue_id);
         theVenue.Name.ToString().ShouldBe(VenueTestData.FirstDirectArena.Name);
@@ -449,7 +449,7 @@ public partial class EventApiSpecs : TruncateDbSpecification
 
     private async Task the_venue_is_updated()
     {
-        var theVenue = JsonSerialization.Deserialize<Domain.Events.Venue.Venue>(await content.ReadAsStringAsync());
+        var theVenue = JsonSerialization.Deserialize<Domain.EventsManagement.Venue.Venue>(await content.ReadAsStringAsync());
         response_code.ShouldBe(HttpStatusCode.OK);
         theVenue.Id.ShouldBe(returned_venue_id);
         theVenue.Name.ToString().ShouldBe(updated_venue_name);
