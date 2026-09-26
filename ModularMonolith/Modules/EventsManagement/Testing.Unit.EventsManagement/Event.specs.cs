@@ -28,7 +28,7 @@ public partial class EventSpecs
             Given(valid_inputs);
             And(an_event_with_non_alphanumerical_characters);
             When(Validating(creating_an_event));
-            Then(Informs("Name can only have alphanumerical characters"));
+            Then(Informs("EventName can only have alphanumerical characters"));
         }); 
     }
         

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Domain.ValueObjects;
@@ -6,21 +7,25 @@ namespace Domain.ValueObjects;
 [JsonConverter(typeof(EventNameConverter))]
 public readonly struct EventName : IEquatable<EventName>
 {
-    private readonly StringValueObject<EventName> _value;
+    private readonly string _value;
 
     public EventName(string name)
     {
-        _value = new StringValueObject<EventName>(name);
         Validation.BasedOn(errors =>
         {
-            if (Regex.IsMatch(name,@"[^a-zA-Z0-9\s]", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)))
+            if (string.IsNullOrEmpty(name))
             {
-                errors.Add("Name can only have alphanumerical characters");
+                errors.Add($"{nameof(EventName)} cannot be null or empty");
+            }
+            else if (Regex.IsMatch(name,@"[^a-zA-Z0-9\s]", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)))
+            {
+                errors.Add($"{nameof(EventName)} can only have alphanumerical characters");
             }
         });
+        _value = name;
     }
     
-    public override string ToString() => _value.ToString();
+    public override string ToString() => _value;
     public override bool Equals(object? obj) => obj is EventName other && _value.Equals(other._value);
     public bool Equals(EventName other) => _value.Equals(other._value);
     public override int GetHashCode() => _value.GetHashCode();
@@ -30,10 +35,15 @@ public readonly struct EventName : IEquatable<EventName>
     public static implicit operator EventName(string name) => new(name);
 }
 
-public class EventNameConverter : StringValueObjectJsonConverter<EventName>
+public class EventNameConverter : JsonConverter<EventName>
 {
-    protected override EventName CreateFromString(string value)
+    public override void Write(Utf8JsonWriter writer, EventName value, JsonSerializerOptions options)
     {
-        return new EventName(value);
+        writer.WriteStringValue(value.ToString());
+    }
+
+    public override EventName Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return new EventName(reader.GetString()!);
     }
 }

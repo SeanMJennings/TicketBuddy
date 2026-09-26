@@ -21,9 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="StringValueObject.steps.cs">
-        <DependentUpon>StringValueObject.specs.cs</DependentUpon>
-      </Compile>
       <Compile Update="Entity.steps.cs">
         <DependentUpon>Entity.specs.cs</DependentUpon>
       </Compile>

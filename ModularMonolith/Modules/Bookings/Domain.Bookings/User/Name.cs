@@ -1,25 +1,28 @@
 ﻿using System.Text.RegularExpressions;
-using Domain.ValueObjects;
 
 namespace Domain.Bookings.User;
 
 public readonly struct Name : IEquatable<Name>
 {
-    private readonly StringValueObject<Name> _value;
+    private readonly string _value;
 
     public Name(string name)
     {
-        _value = new StringValueObject<Name>(name);
         Validation.BasedOn(errors =>
         {
-            if (Regex.IsMatch(name, @"[^a-zA-Z\s]", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)))
+            if (string.IsNullOrEmpty(name))
             {
-                errors.Add("Name can only have alphabetical characters");
+                errors.Add($"{nameof(Name)} cannot be null or empty");
+            }
+            else if (Regex.IsMatch(name, @"[^a-zA-Z\s]", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)))
+            {
+                errors.Add($"{nameof(Name)} can only have alphabetical characters");
             }
         });
+        _value = name;
     }
 
-    public override string ToString() => _value.ToString();
+    public override string ToString() => _value;
     public override bool Equals(object? obj) => obj is Name other && _value.Equals(other._value);
     public bool Equals(Name other) => _value.Equals(other._value);
     public override int GetHashCode() => _value.GetHashCode();

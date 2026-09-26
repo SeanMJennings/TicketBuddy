@@ -1,25 +1,28 @@
 ﻿using System.Text.RegularExpressions;
-using Domain.ValueObjects;
 
 namespace Domain.Bookings.User;
 
 public readonly struct Email : IEquatable<Email>
 {
-    private readonly StringValueObject<Email> _value;
+    private readonly string _value;
 
     public Email(string email)
     {
-        _value = new StringValueObject<Email>(email);
         Validation.BasedOn(errors =>
         {
-            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)))
+            if (string.IsNullOrEmpty(email))
             {
-                errors.Add("Email must be valid");
+                errors.Add($"{nameof(Email)} cannot be null or empty");
+            }
+            else if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)))
+            {
+                errors.Add($"{nameof(Email)} must be valid");
             }
         });
+        _value = email;
     }
 
-    public override string ToString() => _value.ToString();
+    public override string ToString() => _value;
     public override bool Equals(object? obj) => obj is Email other && _value.Equals(other._value);
     public bool Equals(Email other) => _value.Equals(other._value);
     public override int GetHashCode() => _value.GetHashCode();
