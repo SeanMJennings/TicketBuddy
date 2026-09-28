@@ -29,5 +29,5 @@ public class Event : Aggregate
     
     public void UpdatePrice(Money price) => Price = price;
 
-    private void RaiseEventUpsertedDomainEvent() => AddDomainEvent(new EventUpserted(Id, Price, VenueId));
+    private void RaiseEventUpsertedDomainEvent() => AddDomainEvent(new EventChanged(Id, Price, VenueId));
 }

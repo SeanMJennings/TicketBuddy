@@ -11,7 +11,6 @@ public static class Services
 {
     public static IServiceCollection ConfigureEventsManagementServices(this IServiceCollection services)
     {
-        DomainEventsMapBuilder.Map<EventChanged, EventChangedHandler>();
         var eventHandlerMap = DomainEventsMapBuilder.Build();
 
         services
@@ -22,7 +21,6 @@ public static class Services
             .AddScoped<GetEvents>()
             .AddScoped<GetEventById>()
             .AddScoped<MarkEventAsSoldOut>()
-            .AddScoped<EventChangedHandler>()
             .AddScoped<IPersistVenues, Venue.VenueRepository>()
             .AddScoped<CreateVenue>()
             .AddScoped<UpdateVenue>()

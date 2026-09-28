@@ -30,7 +30,6 @@ public partial class GetUnreadCountSpecs : TruncateDbSpecification
             .ConfigureInfrastructureServices()
             .ConfigureNotificationsServices()
             .ConfigureNotificationsDatabase(Setup.Database.GetConnectionString())
-            .AddSingleton(DomainEventsMapBuilder.Build())
             .AddScoped<GetUnreadCountEndpoint>()
             .BuildServiceProvider();
 

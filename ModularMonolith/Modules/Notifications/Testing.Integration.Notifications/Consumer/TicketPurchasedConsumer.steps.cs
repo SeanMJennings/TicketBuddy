@@ -35,7 +35,6 @@ public partial class TicketPurchasedConsumerSpecs : TruncateDbSpecification
             .ConfigureInfrastructureServices()
             .ConfigureNotificationsServices()
             .ConfigureNotificationsDatabase(Setup.Database.GetConnectionString())
-            .AddSingleton(DomainEventsMapBuilder.Build())
             .AddScoped<TicketPurchasedConsumer>()
             .BuildServiceProvider();
 

@@ -13,7 +13,6 @@ using Domain.Bookings.User;
 using Domain.Bookings.Venue;
 using Infrastructure.DomainEventsDispatching;
 using Microsoft.Extensions.DependencyInjection;
-using EventUpsertedHandler = Domain.Bookings.Event.EventUpsertedHandler;
 
 namespace Infrastructure.Bookings.Core.Configuration;
 
@@ -21,7 +20,7 @@ public static class Services
 {
     public static IServiceCollection ConfigureBookingsServices(this IServiceCollection services)
     {
-        DomainEventsMapBuilder.Map<EventUpserted, EventUpsertedHandler>();
+        DomainEventsMapBuilder.Map<EventChanged, EventChangedHandler>();
         DomainEventsMapBuilder.Map<TicketWasPurchased, TicketWasPurchasedHandler>();
         var eventHandlerMap = DomainEventsMapBuilder.Build();
 
@@ -29,7 +28,7 @@ public static class Services
             .AddScoped<IBookingUnitOfWork, UnitOfWork>()
             .AddScoped<IPersistEvents, Event.EventRepository>()
             .AddScoped<UpsertEvent>()
-            .AddScoped<EventUpsertedHandler>()
+            .AddScoped<EventChangedHandler>()
             .AddScoped<IPersistVenues, Venue.VenueRepository>()
             .AddScoped<UpsertVenue>()
             .AddScoped<IPersistTickets, Ticket.TicketRepository>()

@@ -4,11 +4,11 @@ using Domain.Bookings.Venue;
 
 namespace Domain.Bookings.Event;
 
-public class EventUpsertedHandler(
+public class EventChangedHandler(
     IPersistTickets ticketsRepository,
-    IPersistVenues venueRepository) : HandleDomainEvents<EventUpserted>
+    IPersistVenues venueRepository) : HandleDomainEvents<EventChanged>
 {
-    protected override async Task Handle(EventUpserted message)
+    protected override async Task Handle(EventChanged message)
     {
         var tickets = await ticketsRepository.GetByEventId(message.EventId);
         var venue = await venueRepository.GetById(message.VenueId);

@@ -1,5 +1,6 @@
 using Application.Notifications;
 using Domain.Notifications;
+using Infrastructure.DomainEventsDispatching;
 using Infrastructure.Notifications.Notification;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,12 +10,15 @@ public static class Services
 {
     public static IServiceCollection ConfigureNotificationsServices(this IServiceCollection services)
     {
-        services.AddScoped<IPersistNotifications, NotificationRepository>();
-        services.AddScoped<INotificationUnitOfWork, UnitOfWork>();
-        services.AddScoped<GetNotifications>();
-        services.AddScoped<MarkNotificationAsRead>();
-        services.AddScoped<GetUnreadCount>();
-        services.AddScoped<CreateTicketPurchaseNotification>();
+        var eventHandlerMap = DomainEventsMapBuilder.Build();
+        
+        services.AddScoped<IPersistNotifications, NotificationRepository>()
+            .AddScoped<INotificationUnitOfWork, UnitOfWork>()
+            .AddScoped<GetNotifications>()
+            .AddScoped<MarkNotificationAsRead>()
+            .AddScoped<GetUnreadCount>()
+            .AddScoped<CreateTicketPurchaseNotification>()
+            .AddSingleton(eventHandlerMap);
         return services;
     }
 }

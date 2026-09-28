@@ -32,7 +32,6 @@ public partial class GetNotificationsSpecs : TruncateDbSpecification
             .ConfigureInfrastructureServices()
             .ConfigureNotificationsServices()
             .ConfigureNotificationsDatabase(Setup.Database.GetConnectionString())
-            .AddSingleton(DomainEventsMapBuilder.Build())
             .AddScoped<GetNotificationsEndpoint>()
             .BuildServiceProvider();
 
