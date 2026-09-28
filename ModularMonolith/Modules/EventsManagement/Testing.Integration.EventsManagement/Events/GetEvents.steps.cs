@@ -56,7 +56,6 @@ public partial class GetEventsSpecs : TruncateDbSpecification
                 x.AddEventsManagementConsumers();
                 x.AddSharedOutbox();
             })
-            .AddSingleton(new Dictionary<Type, Type>())
             .AddScoped<CreateEventEndpoint>()
             .AddScoped<GetEventsEndpoint>()
             .AddScoped<CreateVenueEndpoint>()
@@ -118,7 +117,6 @@ public partial class GetEventsSpecs : TruncateDbSpecification
         }
         catch (ValidationException)
         {
-            // Expected for imminent events
         }
     }
 

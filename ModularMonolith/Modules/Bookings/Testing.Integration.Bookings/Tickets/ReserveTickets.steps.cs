@@ -57,7 +57,6 @@ public partial class ReserveTicketsSpecs : TruncateDbSpecification
                 x.AddBookingsConsumers();
                 x.AddSharedOutbox();
             })
-            .AddSingleton(new Dictionary<Type, Type>())
             .ConfigureBookingsServices()
             .AddScoped<GetTicketsForEventEndpoint>()
             .AddScoped<ReserveTicketsEndpoint>()

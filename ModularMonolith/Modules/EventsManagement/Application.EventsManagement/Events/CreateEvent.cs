@@ -9,11 +9,11 @@ public class CreateEvent(IPersistEvents eventRepository, IEventManagementUnitOfW
     {
         var eventId = Guid.CreateVersion7();
         EventsValidator.ValidateDate(startDate);
-        var theEvent = new Event(eventId, eventName, startDate, endDate, venueId, price);
+        var theEvent = Event.Create(eventId, eventName, startDate, endDate, venueId, price);
 
         var allEvents = await eventRepository.GetAll();
         EventsValidator.CheckIfVenueAlreadyBooked(theEvent, allEvents);
-        await eventRepository.Add(theEvent);
+        eventRepository.Add(theEvent);
         await unitOfWork.Commit();
         return eventId;
     }

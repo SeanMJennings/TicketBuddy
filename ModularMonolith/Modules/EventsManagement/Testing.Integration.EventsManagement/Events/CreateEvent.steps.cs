@@ -7,7 +7,6 @@ using Infrastructure.EventsManagement.Core.Configuration;
 using Infrastructure.Messaging;
 using MassTransit;
 using MassTransit.Testing;
-using Messages.EventsManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Shouldly;
@@ -54,7 +53,6 @@ public partial class CreateEventSpecs : TruncateDbSpecification
                 x.AddEventsManagementConsumers();
                 x.AddSharedOutbox();
             })
-            .AddSingleton(new Dictionary<Type, Type>())
             .AddScoped<CreateEventEndpoint>()
             .AddScoped<GetEventByIdEndpoint>()
             .AddScoped<CreateVenueEndpoint>()

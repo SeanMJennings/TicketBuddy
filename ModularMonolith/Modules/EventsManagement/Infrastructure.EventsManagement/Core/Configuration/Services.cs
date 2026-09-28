@@ -2,6 +2,7 @@
 using Application.EventsManagement.Venue;
 using Domain.EventsManagement;
 using Domain.EventsManagement.Venue;
+using Infrastructure.DomainEventsDispatching;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.EventsManagement.Core.Configuration;
@@ -10,6 +11,9 @@ public static class Services
 {
     public static IServiceCollection ConfigureEventsManagementServices(this IServiceCollection services)
     {
+        DomainEventsMapBuilder.Map<EventChanged, EventChangedHandler>();
+        var eventHandlerMap = DomainEventsMapBuilder.Build();
+
         services
             .AddScoped<IEventManagementUnitOfWork, UnitOfWork>()
             .AddScoped<IPersistEvents, Event.EventRepository>()
@@ -18,11 +22,13 @@ public static class Services
             .AddScoped<GetEvents>()
             .AddScoped<GetEventById>()
             .AddScoped<MarkEventAsSoldOut>()
+            .AddScoped<EventChangedHandler>()
             .AddScoped<IPersistVenues, Venue.VenueRepository>()
             .AddScoped<CreateVenue>()
             .AddScoped<UpdateVenue>()
             .AddScoped<GetVenueById>()
-            .AddScoped<GetVenues>();
+            .AddScoped<GetVenues>()
+            .AddSingleton(eventHandlerMap);
         return services;
     }
 }

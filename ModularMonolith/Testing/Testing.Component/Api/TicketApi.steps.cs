@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using System.Text;
 using Controllers.EventsManagement.Requests;
 using Controllers.Bookings.Requests;
-using Domain.Bookings.Ticket;
 using Application;
 using Application.Bookings.Ticket.Queries;
 using MassTransit.Testing;
@@ -118,7 +117,6 @@ public partial class TicketApiSpecs : TruncateDbSpecification
             { "email", email }
         };
         await testHarness.Bus.Publish(new UserRegistered(user_id, details));
-        //await testHarness.Consumed.Any<UserRegistered>(x => x.Context.Message.userId == user_id);
     }
 
     private async Task requesting_the_tickets()
@@ -304,7 +302,6 @@ public partial class TicketApiSpecs : TruncateDbSpecification
         keyValue.ToString().ShouldBe(user_id.ToString());
     }
     
-    // [NotMapped] property in read model class affects serialization, so using a private class here for testing
     private class Ticket
     {
         public Guid Id { get; init; }

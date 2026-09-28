@@ -41,6 +41,7 @@ public abstract class Aggregate
 
     protected void AddDomainEvent(IDescribeADomainEvent domainEvent)
     {
+        if (_domainEvents.Contains(domainEvent)) return;
         _domainEvents.Add(domainEvent);
     }
 }

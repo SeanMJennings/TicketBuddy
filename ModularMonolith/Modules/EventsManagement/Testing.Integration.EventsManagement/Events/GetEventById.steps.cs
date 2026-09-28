@@ -32,7 +32,6 @@ public partial class GetEventByIdSpecs : TruncateDbSpecification
                 x.AddEventsManagementConsumers();
                 x.AddSharedOutbox();
             })
-            .AddSingleton(new Dictionary<Type, Type>())
             .AddScoped<GetEventByIdEndpoint>()
             .BuildServiceProvider();
 

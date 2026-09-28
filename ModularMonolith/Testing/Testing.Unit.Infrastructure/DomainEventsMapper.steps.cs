@@ -15,9 +15,8 @@ public partial class DomainEventsMapperSpecs
         var serviceProvider = Substitute.For<IServiceProvider>();
         serviceProvider.GetService(typeof(SampleHandler)).Returns(new SampleHandler());
 
-        var map = new DomainEventsMapBuilder()
-            .Map<SampleEvent, SampleHandler>()
-            .Build();
+        DomainEventsMapBuilder.Map<SampleEvent, SampleHandler>();
+        var map = DomainEventsMapBuilder.Build();
 
         mapper = new DomainEventsMapper(map, serviceProvider);
     }
@@ -27,27 +26,27 @@ public partial class DomainEventsMapperSpecs
         var serviceProvider = Substitute.For<IServiceProvider>();
         serviceProvider.GetService(typeof(SampleHandler)).Returns(null);
 
-        var map = new DomainEventsMapBuilder()
-            .Map<SampleEvent, SampleHandler>()
-            .Build();
+        DomainEventsMapBuilder.Map<SampleEvent, SampleHandler>();
+        var map = DomainEventsMapBuilder.Build();
 
         mapper = new DomainEventsMapper(map, serviceProvider);
     }
 
     private void an_empty_mapper()
     {
-        mapper = new DomainEventsMapper([], Substitute.For<IServiceProvider>());
+        mapper = new DomainEventsMapper(DomainEventsMapBuilder.Build(), Substitute.For<IServiceProvider>());
     }
 
     private void getting_handler_for_registered_event() => retrievedHandler = mapper.GetHandler(new SampleEvent());
 
-    private void getting_handler_for_unregistered_event() => mapper.GetHandler(new SampleEvent());
+    private void getting_handler_for_unregistered_event() => mapper.GetHandler(new AnotherSampleEvent());
 
     private void the_handler_is_returned() => retrievedHandler.ShouldNotBeNull();
     private static void a_key_not_found_exception_is_thrown() => error.ShouldBeOfType<KeyNotFoundException>();
     private static void an_invalid_operation_exception_is_thrown() => error.ShouldBeOfType<InvalidOperationException>();
 
     private record SampleEvent : IDescribeADomainEvent;
+    private record AnotherSampleEvent : IDescribeADomainEvent;
 
     private class SampleHandler : HandleDomainEvents<SampleEvent>
     {

@@ -3,6 +3,7 @@ using Controllers.Notifications;
 using Domain.Exceptions;
 using Domain.Notifications;
 using Infrastructure.Configuration;
+using Infrastructure.DomainEventsDispatching;
 using Infrastructure.Notifications.Core;
 using Infrastructure.Notifications.Core.Configuration;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +31,7 @@ public partial class MarkNotificationAsReadSpecs : TruncateDbSpecification
             .ConfigureInfrastructureServices()
             .ConfigureNotificationsServices()
             .ConfigureNotificationsDatabase(Setup.Database.GetConnectionString())
-            .AddSingleton(new Dictionary<Type, Type>())
+            .AddSingleton(DomainEventsMapBuilder.Build())
             .AddScoped<MarkNotificationAsReadEndpoint>()
             .BuildServiceProvider();
 

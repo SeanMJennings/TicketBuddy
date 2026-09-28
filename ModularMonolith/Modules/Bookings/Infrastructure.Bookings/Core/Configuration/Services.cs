@@ -1,5 +1,4 @@
 ﻿using Application.Bookings.Event;
-using Application.Bookings.Ticket;
 using Application.Bookings.Ticket.GetTicketsForEvent;
 using Application.Bookings.Ticket.GetTicketsForUser;
 using Application.Bookings.Ticket.PurchaseTickets;
@@ -22,10 +21,9 @@ public static class Services
 {
     public static IServiceCollection ConfigureBookingsServices(this IServiceCollection services)
     {
-        var eventHandlerMap = new DomainEventsMapBuilder()
-            .Map<EventUpserted, EventUpsertedHandler>()
-            .Map<TicketWasPurchased, TicketWasPurchasedHandler>()
-            .Build();
+        DomainEventsMapBuilder.Map<EventUpserted, EventUpsertedHandler>();
+        DomainEventsMapBuilder.Map<TicketWasPurchased, TicketWasPurchasedHandler>();
+        var eventHandlerMap = DomainEventsMapBuilder.Build();
 
         services
             .AddScoped<IBookingUnitOfWork, UnitOfWork>()

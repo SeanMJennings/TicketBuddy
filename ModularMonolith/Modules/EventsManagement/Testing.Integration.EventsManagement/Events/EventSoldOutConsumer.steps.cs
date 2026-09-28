@@ -52,7 +52,6 @@ public partial class EventSoldOutConsumerSpecs : TruncateDbSpecification
                 x.AddEventsManagementConsumers();
                 x.AddSharedOutbox();
             })
-            .AddSingleton(new Dictionary<Type, Type>())
             .AddScoped<CreateEventEndpoint>()
             .AddScoped<GetEventByIdEndpoint>()
             .AddScoped<CreateVenueEndpoint>()

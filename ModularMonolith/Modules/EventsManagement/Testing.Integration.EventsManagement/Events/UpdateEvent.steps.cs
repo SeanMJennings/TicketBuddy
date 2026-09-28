@@ -59,7 +59,6 @@ public partial class UpdateEventSpecs : TruncateDbSpecification
                 x.AddEventsManagementConsumers();
                 x.AddSharedOutbox();
             })
-            .AddSingleton(new Dictionary<Type, Type>())
             .AddScoped<CreateEventEndpoint>()
             .AddScoped<GetEventByIdEndpoint>()
             .AddScoped<UpdateEventEndpoint>()

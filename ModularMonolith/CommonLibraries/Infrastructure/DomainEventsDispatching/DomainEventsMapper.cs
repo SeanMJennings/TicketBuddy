@@ -2,7 +2,7 @@
 
 namespace Infrastructure.DomainEventsDispatching;
 
-public class DomainEventsMapper(Dictionary<Type, Type> map, IServiceProvider serviceProvider)
+public class DomainEventsMapper(IReadOnlyDictionary<Type, Type> map, IServiceProvider serviceProvider)
 {
     public IHandleDomainEvents GetHandler(IDescribeADomainEvent domainEvent)
     {
@@ -15,17 +15,16 @@ public class DomainEventsMapper(Dictionary<Type, Type> map, IServiceProvider ser
     }
 }
 
-public class DomainEventsMapBuilder
+public static class DomainEventsMapBuilder
 {
-    private readonly Dictionary<Type, Type> _map = [];
+    private static readonly Dictionary<Type, Type> _map = [];
 
-    public DomainEventsMapBuilder Map<TEvent, THandler>()
+    public static void Map<TEvent, THandler>()
         where TEvent : IDescribeADomainEvent
         where THandler : HandleDomainEvents<TEvent>
     {
         _map[typeof(TEvent)] = typeof(THandler);
-        return this;
     }
 
-    public Dictionary<Type, Type> Build() => _map;
+    public static IReadOnlyDictionary<Type, Type> Build() => _map.AsReadOnly();
 }

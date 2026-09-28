@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Controllers.Notifications;
 using Domain.Notifications;
 using Infrastructure.Configuration;
+using Infrastructure.DomainEventsDispatching;
 using Infrastructure.Notifications.Core;
 using Infrastructure.Notifications.Core.Configuration;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +32,7 @@ public partial class GetNotificationsSpecs : TruncateDbSpecification
             .ConfigureInfrastructureServices()
             .ConfigureNotificationsServices()
             .ConfigureNotificationsDatabase(Setup.Database.GetConnectionString())
-            .AddSingleton(new Dictionary<Type, Type>())
+            .AddSingleton(DomainEventsMapBuilder.Build())
             .AddScoped<GetNotificationsEndpoint>()
             .BuildServiceProvider();
 

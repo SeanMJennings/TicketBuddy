@@ -15,7 +15,8 @@ public class UpdateEvent(IPersistEvents eventRepository, IEventManagementUnitOfW
 
         var allEvents = await eventRepository.GetAll();
         EventsValidator.CheckIfVenueAlreadyBooked(existingEvent, allEvents);
-        await eventRepository.Update(existingEvent);
+        eventRepository.Update(existingEvent);
+        
         await unitOfWork.Commit();
     }
 }

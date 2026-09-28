@@ -11,7 +11,7 @@ public class MarkEventAsSoldOut(IPersistEvents eventRepository, IEventManagement
         if (theEvent is null) return;
         
         theEvent.MarkAsSoldOut();
-        await eventRepository.Update(theEvent);
+        eventRepository.Update(theEvent);
         await unitOfWork.Commit();
     }
 }

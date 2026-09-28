@@ -1,5 +1,6 @@
 using Domain.Notifications;
 using Infrastructure.Configuration;
+using Infrastructure.DomainEventsDispatching;
 using Infrastructure.Notifications.Core;
 using Infrastructure.Notifications.Core.Configuration;
 using MassTransit;
@@ -34,8 +35,8 @@ public partial class TicketPurchasedConsumerSpecs : TruncateDbSpecification
             .ConfigureInfrastructureServices()
             .ConfigureNotificationsServices()
             .ConfigureNotificationsDatabase(Setup.Database.GetConnectionString())
-            .AddSingleton(new Dictionary<Type, Type>())
-            .AddScoped<Messaging.Notifications.Consumers.TicketPurchasedConsumer>()
+            .AddSingleton(DomainEventsMapBuilder.Build())
+            .AddScoped<TicketPurchasedConsumer>()
             .BuildServiceProvider();
 
         consumer = serviceProvider.GetRequiredService<Messaging.Notifications.Consumers.TicketPurchasedConsumer>();

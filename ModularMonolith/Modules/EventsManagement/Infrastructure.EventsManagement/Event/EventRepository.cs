@@ -1,36 +1,19 @@
-﻿using Application;
-using Domain.EventsManagement;
+﻿using Domain.EventsManagement;
 using Infrastructure.EventsManagement.Core;
-using Messages.EventsManagement;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.EventsManagement.Event;
 
-public class EventRepository(EventManagementDbContext eventManagementDbContext, IPublishMessages publishEndpoint) : IPersistEvents
+public class EventRepository(EventManagementDbContext eventManagementDbContext) : IPersistEvents
 {
-    public async Task Add(Domain.EventsManagement.Event theEvent)
+    public void Add(Domain.EventsManagement.Event theEvent)
     {
         eventManagementDbContext.Add(theEvent);
-        await PublishEventUpserted(theEvent);
     }
 
-    public async Task Update(Domain.EventsManagement.Event @event)
+    public void Update(Domain.EventsManagement.Event @event)
     {
         eventManagementDbContext.Update(@event);
-        await PublishEventUpserted(@event);
-    }
-
-    private async Task PublishEventUpserted(Domain.EventsManagement.Event theEvent)
-    {
-        await publishEndpoint.Publish(new EventUpserted
-        {
-            Id = theEvent.Id,
-            EventName = theEvent.EventName,
-            StartDate = theEvent.StartDate,
-            EndDate = theEvent.EndDate,
-            VenueId = theEvent.VenueId,
-            Price = theEvent.Price
-        });
     }
 
     public async Task<Domain.EventsManagement.Event?> Get(Guid id)
