@@ -288,7 +288,7 @@ public partial class EventApiSpecs : TruncateDbSpecification
 
     private void an_integration_event_is_published()
     {
-        testHarness.Published.Select<EventUpserted>()
+        testHarness.Published.Select<Messages.EventsManagement.EventChanged>()
             .Any(e => 
                 e.Context.Message.Id == returned_id && 
                 e.Context.Message.EventName == name &&
@@ -301,7 +301,7 @@ public partial class EventApiSpecs : TruncateDbSpecification
 
     private void an_another_integration_event_is_published()
     {
-        testHarness.Published.Select<EventUpserted>()
+        testHarness.Published.Select<Messages.EventsManagement.EventChanged>()
             .Any(e =>
                 e.Context.Message.Id == returned_id &&
                 e.Context.Message.EventName == new_name &&
@@ -410,7 +410,7 @@ public partial class EventApiSpecs : TruncateDbSpecification
 
     private void a_venue_integration_event_is_published()
     {
-        testHarness.Published.Select<VenueUpserted>()
+        testHarness.Published.Select<VenueChanged>()
             .Any(v =>
                 v.Context.Message.Id == returned_venue_id &&
                 v.Context.Message is { Name: "Royal Albert Hall", Capacity: 30 }

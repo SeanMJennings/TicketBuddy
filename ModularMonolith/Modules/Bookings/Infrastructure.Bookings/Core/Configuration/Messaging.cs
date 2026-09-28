@@ -19,8 +19,8 @@ public static class Messaging
     {
         cfg.ReceiveEndpoint("bookings-queue", e =>
         {
-            e.Bind<EventUpserted>();
-            e.Bind<VenueUpserted>();
+            e.Bind<EventChanged>();
+            e.Bind<VenueChanged>();
         });
     }
 }

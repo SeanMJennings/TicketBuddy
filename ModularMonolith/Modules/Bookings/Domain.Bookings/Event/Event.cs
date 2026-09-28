@@ -15,7 +15,7 @@ public class Event : Aggregate
     public static Event Create(Guid id, EventName eventName, Guid venueId, Money price)
     {
         var newEvent = new Event(id, eventName, venueId, price);
-        newEvent.RaiseEventUpsertedDomainEvent();
+        newEvent.RaiseEventChangedDomainEvent();
         return newEvent;
     }
     
@@ -29,5 +29,5 @@ public class Event : Aggregate
     
     public void UpdatePrice(Money price) => Price = price;
 
-    private void RaiseEventUpsertedDomainEvent() => AddDomainEvent(new EventChanged(Id, Price, VenueId));
+    private void RaiseEventChangedDomainEvent() => AddDomainEvent(new EventChanged(Id, Price, VenueId));
 }

@@ -152,12 +152,12 @@ public partial class UpdateVenueSpecs : TruncateDbSpecification
         theVenue.Capacity.ShouldBe(updatedCapacity);
     }
 
-    private async Task a_venue_upserted_message_is_published()
+    private static async Task an_integration_event_is_published()
     {
         await using var connection = new NpgsqlConnection(Setup.Database.GetConnectionString());
         await connection.OpenAsync();
         await using var cmd = new NpgsqlCommand(
-            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%VenueUpserted%'""",
+            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%VenueChanged%'""",
             connection);
         var count = (long)(await cmd.ExecuteScalarAsync())!;
         count.ShouldBeGreaterThan(0);

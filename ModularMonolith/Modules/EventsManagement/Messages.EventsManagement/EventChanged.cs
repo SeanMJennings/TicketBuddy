@@ -1,6 +1,6 @@
 namespace Messages.EventsManagement;
 
-public record EventUpserted
+public record EventChanged
 {
     public Guid Id { get; init; }
     public string EventName { get; init; } = null!;

@@ -5,6 +5,7 @@ using Infrastructure.EventsManagement.Core.Configuration;
 using Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Shouldly;
 using Testing;
 
@@ -79,5 +80,16 @@ public partial class CreateVenueSpecs : TruncateDbSpecification
         theVenue.Address.City.ShouldBe(city);
         theVenue.Address.Postcode.ShouldBe(postcode.ToUpperInvariant());
         theVenue.Capacity.ShouldBe(capacity);
+    }
+    
+    private static async Task an_integration_event_is_published()
+    {
+        await using var connection = new NpgsqlConnection(Setup.Database.GetConnectionString());
+        await connection.OpenAsync();
+        await using var cmd = new NpgsqlCommand(
+            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%VenueChanged%'""",
+            connection);
+        var count = (long)(await cmd.ExecuteScalarAsync())!;
+        count.ShouldBeGreaterThan(0);
     }
 }

@@ -2,6 +2,6 @@ namespace Domain.Bookings.Venue;
 
 public interface IPersistVenues
 {
-    Task Upsert(Venue venue);
+    Task Save(Venue venue);
     Task<Venue?> GetById(Guid id);
 }

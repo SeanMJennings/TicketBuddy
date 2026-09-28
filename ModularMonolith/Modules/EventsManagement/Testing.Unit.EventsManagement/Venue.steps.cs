@@ -77,7 +77,7 @@ public partial class VenueSpecs : Specification
     private void creating_a_venue()
     {
         var address = new Address(street, city, postcode);
-        venue = new Venue(id, new VenueName(venueName), address, capacity);
+        venue = Venue.Create(id, new VenueName(venueName), address, capacity);
     }
 
     private void the_venue_is_created()
@@ -97,7 +97,7 @@ public partial class VenueSpecs : Specification
     {
         venues =
         [
-            new Venue(
+            Venue.Create(
                 Guid.CreateVersion7(),
                 new VenueName("Different Venue Name"),
                 new Address(valid_street, valid_city, valid_postcode),
@@ -204,7 +204,7 @@ public partial class VenueSpecs : Specification
 
     private void another_venue_at_different_address()
     {
-        otherVenue = new Venue(
+        otherVenue = Venue.Create(
             Guid.CreateVersion7(),
             new VenueName("Different Venue"),
             new Address("Different Street", "Different City", "M1 1AA"),

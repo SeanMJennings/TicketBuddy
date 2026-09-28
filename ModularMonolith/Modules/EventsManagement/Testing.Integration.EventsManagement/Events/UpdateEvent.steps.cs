@@ -155,12 +155,12 @@ public partial class UpdateEventSpecs : TruncateDbSpecification
         theEvent.Price.ShouldBe(new_price);
     }
 
-    private async Task an_another_integration_event_is_published()
+    private static async Task an_integration_event_is_published()
     {
         await using var connection = new NpgsqlConnection(Setup.Database.GetConnectionString());
         await connection.OpenAsync();
         await using var cmd = new NpgsqlCommand(
-            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%EventUpserted%'""",
+            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%EventChanged%'""",
             connection);
         var count = (long)(await cmd.ExecuteScalarAsync())!;
         count.ShouldBeGreaterThan(0);

@@ -64,7 +64,7 @@ public partial class EventSpecs : Specification
     
     private void creating_an_event()
     {
-        user = new Event(id, name, start_date, end_date, venueId, price);
+        user = Event.Create(id, name, start_date, end_date, venueId, price);
     }
 
     private void the_event_is_created()

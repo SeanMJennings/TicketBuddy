@@ -72,7 +72,7 @@ public partial class TicketApiSpecs : TruncateDbSpecification
         var venue1Response = await client.PostAsJsonAsync(Controllers.EventsManagement.Routes.Venues, new VenuePayload("Old Trafford", "Sir Matt Busby Way", "Manchester", "M16 0RA", 17));
         venue1Response.StatusCode.ShouldBe(HttpStatusCode.Created);
         venue1Id = JsonSerialization.Deserialize<Guid>(await venue1Response.Content.ReadAsStringAsync());
-        await testHarness.Consumed.Any<VenueUpserted>(x => x.Context.Message.Id == venue1Id);
+        await testHarness.Consumed.Any<VenueChanged>(x => x.Context.Message.Id == venue1Id);
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.Add(UserHeaders.UserType, nameof(UserType.Customer));
         client.DefaultRequestHeaders.Add(UserHeaders.UserId, user_id.ToString());
@@ -96,7 +96,7 @@ public partial class TicketApiSpecs : TruncateDbSpecification
 
     private async Task an_event_exists()
     {
-        await testHarness.Bus.Publish(new EventUpserted
+        await testHarness.Bus.Publish(new EventChanged
         {
             Id = event_id,
             EventName = name,
@@ -105,7 +105,7 @@ public partial class TicketApiSpecs : TruncateDbSpecification
             VenueId = venue1Id,
             Price = price
         });
-        await testHarness.Consumed.Any<EventUpserted>(x => x.Context.Message.Id == event_id);
+        await testHarness.Consumed.Any<EventChanged>(x => x.Context.Message.Id == event_id);
     }
 
     private async Task a_user_exists()
@@ -205,7 +205,7 @@ public partial class TicketApiSpecs : TruncateDbSpecification
 
     private async Task updating_the_ticket_prices()
     {
-        await testHarness.Bus.Publish(new EventUpserted
+        await testHarness.Bus.Publish(new EventChanged
         {
             Id = event_id,
             EventName = name,
@@ -214,7 +214,7 @@ public partial class TicketApiSpecs : TruncateDbSpecification
             VenueId = venue1Id,
             Price = new_price
         });
-        await testHarness.Consumed.Any<EventUpserted>(x => x.Context.Message.Id == event_id && x.Context.Message.Price == new_price);
+        await testHarness.Consumed.Any<EventChanged>(x => x.Context.Message.Id == event_id && x.Context.Message.Price == new_price);
         Thread.Sleep(100);
     }
     

@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace Integration.Bookings;
 
-public partial class UpsertUserSpecs
+public partial class RegisterUserSpecs
 {
     [Test]
     public async Task upserting_a_user_that_already_exists_updates_their_details()

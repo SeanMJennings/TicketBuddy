@@ -3,7 +3,7 @@ namespace Domain.EventsManagement.Venue;
 public interface IPersistVenues
 {
     Task<IEnumerable<Venue>> GetAll();
-    Task Add(Venue venue);
+    void Add(Venue venue);
     Task<Venue?> GetById(Guid id);
-    Task Update(Venue venue);
+    void Update(Venue venue);
 }

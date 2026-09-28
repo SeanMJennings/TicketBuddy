@@ -126,12 +126,12 @@ public partial class CreateEventSpecs : TruncateDbSpecification
         theEvent.Price.ShouldBe(price);
     }
 
-    private static async Task outbox_message_is_persisted_to_the_event_schema()
+    private static async Task an_integration_event_is_published()
     {
         await using var connection = new NpgsqlConnection(Setup.Database.GetConnectionString());
         await connection.OpenAsync();
         await using var cmd = new NpgsqlCommand(
-            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%EventUpserted%'""",
+            """SELECT COUNT(*) FROM "Messaging"."OutboxMessage" WHERE "MessageType" LIKE '%EventChanged%'""",
             connection);
         var count = (long)(await cmd.ExecuteScalarAsync())!;
         count.ShouldBeGreaterThan(0);

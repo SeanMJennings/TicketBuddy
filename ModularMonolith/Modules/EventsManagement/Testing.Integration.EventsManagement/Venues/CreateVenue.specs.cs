@@ -11,5 +11,6 @@ public partial class CreateVenueSpecs
         await When(creating_the_venue);
         await And(requesting_the_venue);
               Then(the_venue_is_created);
+        await Then(an_integration_event_is_published);
     }
 }

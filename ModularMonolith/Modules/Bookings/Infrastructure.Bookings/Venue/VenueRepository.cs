@@ -6,7 +6,7 @@ namespace Infrastructure.Bookings.Venue;
 
 public class VenueRepository(BookingDbContext bookingDbContext) : IPersistVenues
 {
-    public async Task Upsert(Domain.Bookings.Venue.Venue venue)
+    public async Task Save(Domain.Bookings.Venue.Venue venue)
     {
         var existingVenue = await bookingDbContext.Venues
             .FirstOrDefaultAsync(v => v.Id == venue.Id);

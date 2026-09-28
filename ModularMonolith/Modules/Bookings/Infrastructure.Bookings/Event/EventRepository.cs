@@ -6,7 +6,7 @@ namespace Infrastructure.Bookings.Event;
 
 public class EventRepository(BookingDbContext bookingDbContext) : IPersistEvents
 {
-    public async Task Upsert(Domain.Bookings.Event.Event theEvent)
+    public async Task Save(Domain.Bookings.Event.Event theEvent)
     {
         var @event = await GetById(theEvent.Id);
         

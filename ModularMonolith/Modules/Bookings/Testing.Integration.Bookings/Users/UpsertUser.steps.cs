@@ -15,7 +15,7 @@ using Testing;
 
 namespace Integration.Bookings;
 
-public partial class UpsertUserSpecs : TruncateDbSpecification
+public partial class RegisterUserSpecs : TruncateDbSpecification
 {
     private UserRegisteredConsumer userRegisteredConsumer = null!;
     private ServiceProvider serviceProvider = null!;

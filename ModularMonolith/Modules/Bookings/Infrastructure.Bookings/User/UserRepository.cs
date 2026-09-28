@@ -5,7 +5,7 @@ namespace Infrastructure.Bookings.User;
 
 public class UserRepository(BookingDbContext bookingDbContext) : IPersistUsers
 {
-    public async Task Upsert(Domain.Bookings.User.User theUser)
+    public async Task Save(Domain.Bookings.User.User theUser)
     {
         var existingUser = await Get(theUser.Id);
         if (existingUser is not null)

@@ -1,6 +1,6 @@
 namespace Messages.EventsManagement;
 
-public record VenueUpserted
+public record VenueChanged
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = null!;

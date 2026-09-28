@@ -24,8 +24,8 @@ public partial class ReserveTicketsSpecs : TruncateDbSpecification
 {
     private GetTicketsForEventEndpoint getTicketsForEventEndpoint = null!;
     private ReserveTicketsEndpoint reserveTicketsEndpoint = null!;
-    private EventUpsertedConsumer eventUpsertedConsumer = null!;
-    private VenueUpsertedConsumer venueUpsertedConsumer = null!;
+    private EventChangedConsumer _eventChangedConsumer = null!;
+    private VenueChangedConsumer _venueChangedConsumer = null!;
     private UserRegisteredConsumer userRegisteredConsumer = null!;
     private ServiceProvider serviceProvider = null!;
     private StackExchange.Redis.IConnectionMultiplexer cache = null!;
@@ -68,8 +68,8 @@ public partial class ReserveTicketsSpecs : TruncateDbSpecification
         reserveTicketsEndpoint = serviceProvider.GetRequiredService<ReserveTicketsEndpoint>();
         AddUserClaimToControllerContext(user_id);
         cache = serviceProvider.GetRequiredService<StackExchange.Redis.IConnectionMultiplexer>();
-        eventUpsertedConsumer = serviceProvider.GetRequiredService<EventUpsertedConsumer>();
-        venueUpsertedConsumer = serviceProvider.GetRequiredService<VenueUpsertedConsumer>();
+        _eventChangedConsumer = serviceProvider.GetRequiredService<EventChangedConsumer>();
+        _venueChangedConsumer = serviceProvider.GetRequiredService<VenueChangedConsumer>();
         userRegisteredConsumer = serviceProvider.GetRequiredService<UserRegisteredConsumer>();
         return Task.CompletedTask;
     }
@@ -98,17 +98,17 @@ public partial class ReserveTicketsSpecs : TruncateDbSpecification
     {
         var venueId = Guid.Parse("22222222-2222-2222-2222-222222222222");
 
-        var venueContext = Substitute.For<ConsumeContext<VenueUpserted>>();
-        venueContext.Message.Returns(new VenueUpserted
+        var venueContext = Substitute.For<ConsumeContext<VenueChanged>>();
+        venueContext.Message.Returns(new VenueChanged
         {
             Id = venueId,
             Name = "Test Venue",
             Capacity = 17
         });
-        await venueUpsertedConsumer.Consume(venueContext);
+        await _venueChangedConsumer.Consume(venueContext);
 
-        var eventContext = Substitute.For<ConsumeContext<EventUpserted>>();
-        eventContext.Message.Returns(new EventUpserted
+        var eventContext = Substitute.For<ConsumeContext<EventChanged>>();
+        eventContext.Message.Returns(new EventChanged
         {
             Id = event_id,
             EventName = name,
@@ -117,7 +117,7 @@ public partial class ReserveTicketsSpecs : TruncateDbSpecification
             VenueId = venueId,
             Price = price
         });
-        await eventUpsertedConsumer.Consume(eventContext);
+        await _eventChangedConsumer.Consume(eventContext);
     }
 
     private async Task a_user_exists()

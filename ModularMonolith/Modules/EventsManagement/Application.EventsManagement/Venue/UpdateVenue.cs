@@ -14,7 +14,7 @@ public class UpdateVenue(IPersistVenues venueRepository, IEventManagementUnitOfW
 
         var allVenues = await venueRepository.GetAll();
         VenuesValidator.CheckAddressUniqueness(address, allVenues, venueId);
-        await venueRepository.Update(existingVenue);
+        venueRepository.Update(existingVenue);
         await unitOfWork.Commit();
     }
 }

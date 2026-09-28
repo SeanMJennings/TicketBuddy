@@ -27,10 +27,10 @@ public static class Services
         services
             .AddScoped<IBookingUnitOfWork, UnitOfWork>()
             .AddScoped<IPersistEvents, Event.EventRepository>()
-            .AddScoped<UpsertEvent>()
+            .AddScoped<RegisterEvent>()
             .AddScoped<EventChangedHandler>()
             .AddScoped<IPersistVenues, Venue.VenueRepository>()
-            .AddScoped<UpsertVenue>()
+            .AddScoped<RegisterVenue>()
             .AddScoped<IPersistTickets, Ticket.TicketRepository>()
             .AddScoped<IQueryTickets, Ticket.TicketQuerist>()
             .AddScoped<IQueryTicketReservations, Ticket.TicketReservationCacheRepository>()
@@ -41,7 +41,7 @@ public static class Services
             .AddScoped<GetTicketsForUser>()
             .AddScoped<TicketWasPurchasedHandler>()
             .AddScoped<IPersistUsers, User.UserRepository>()
-            .AddScoped<UpsertUser>()
+            .AddScoped<RegisterUser>()
             .AddSingleton(eventHandlerMap);
         return services;
     }

@@ -35,6 +35,6 @@ public partial class CreateEventSpecs
     {
               Given(a_request_to_create_an_event);
         await When(creating_the_event);
-        await Then(outbox_message_is_persisted_to_the_event_schema);
+        await Then(an_integration_event_is_published);
     }
 }

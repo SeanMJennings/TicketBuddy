@@ -4,11 +4,11 @@ using Messaging.Keycloak.Users;
 
 namespace Messaging.Bookings.Consumers;
 
-public class UserRegisteredConsumer(UpsertUser upsertUser) : IConsumer<UserRegistered>
+public class UserRegisteredConsumer(RegisterUser registerUser) : IConsumer<UserRegistered>
 {
     public async Task Consume(ConsumeContext<UserRegistered> context)
     {
-        await upsertUser.Execute(context.Message);
+        await registerUser.Execute(context.Message);
     }
 }
 

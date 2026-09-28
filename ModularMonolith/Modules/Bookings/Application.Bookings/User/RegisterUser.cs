@@ -4,7 +4,7 @@ using Messaging.Keycloak.Users;
 
 namespace Application.Bookings.User;
 
-public class UpsertUser(IPersistUsers userRepository, IBookingUnitOfWork unitOfWork)
+public class RegisterUser(IPersistUsers userRepository, IBookingUnitOfWork unitOfWork)
 {
     public async Task Execute(UserRegistered message)
     {
@@ -14,7 +14,7 @@ public class UpsertUser(IPersistUsers userRepository, IBookingUnitOfWork unitOfW
             new Email(message.details["email"])
         );
         
-        await userRepository.Upsert(user);
+        await userRepository.Save(user);
         await unitOfWork.Commit();
     }
 }

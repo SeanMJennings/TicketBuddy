@@ -2,5 +2,5 @@
 
 public interface IPersistUsers
 {
-    public Task Upsert(User user);
+    public Task Save(User user);
 }

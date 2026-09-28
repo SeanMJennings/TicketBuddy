@@ -4,7 +4,7 @@ using Messages.EventsManagement;
 
 namespace Application.EventsManagement;
 
-public class UpdateEvent(IPersistEvents eventRepository, IPublishMessages publishEndpoint, IEventManagementUnitOfWork unitOfWork)
+public class UpdateEvent(IPersistEvents eventRepository, IEventManagementUnitOfWork unitOfWork)
 {
     public async Task Execute(Guid eventId, EventName eventName, DateTimeOffset startDate, DateTimeOffset endDate, Money price)
     {
@@ -17,16 +17,6 @@ public class UpdateEvent(IPersistEvents eventRepository, IPublishMessages publis
         var allEvents = await eventRepository.GetAll();
         EventsValidator.CheckIfVenueAlreadyBooked(existingEvent, allEvents);
         eventRepository.Update(existingEvent);
-        
-        await publishEndpoint.Publish(new EventUpserted
-        {
-            Id = existingEvent.Id,
-            EventName = existingEvent.EventName,
-            StartDate = existingEvent.StartDate,
-            EndDate = existingEvent.EndDate,
-            VenueId = existingEvent.VenueId,
-            Price = existingEvent.Price
-        });
         
         await unitOfWork.Commit();
     }
